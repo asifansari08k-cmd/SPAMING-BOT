@@ -1,4 +1,17 @@
 import asyncio
+import sys
+
+# --- 🔥 ULTIMATE ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ (RENDER FIX) 🔥 ---
+try:
+    loop = asyncio.get_running_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+# Pyrogram ko bypass karne ke liye magic patch
+asyncio.get_event_loop = lambda: loop
+# -----------------------------------------------------------------------
+
 import random
 import os
 from pyrogram import Client, filters, idle
@@ -6,14 +19,6 @@ from pyrogram.enums import ParseMode, UserStatus, ChatMembersFilter, ChatMemberS
 from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ (NO MORE RUNTIME ERROR) ---
-try:
-    loop = asyncio.get_running_loop()
-except RuntimeError:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-# -----------------------------------------------------------------------
 
 # --- FLASK KEEP ALIVE SECTION ---
 from flask import Flask
@@ -23,7 +28,7 @@ web_app = Flask('')
 
 @web_app.route('/')
 def home():
-    return "Gourisen OSINT Bot is Running!"
+    return "Gourisen OSINT Manager Bot is Running!"
 
 def run_web():
     port = int(os.environ.get("PORT", 10000))
@@ -39,18 +44,13 @@ def keep_alive():
 API_ID = 37314366
 API_HASH = "bd4c934697e7e91942ac911a5a287b46"
 
-# ⚠️ USERBOT KE LIYE SESSION STRING ZAROORI HAI (Bot token nahi chalega)
+# ⚠️ USERBOT KE LIYE SESSION STRING ZAROORI HAI
 SESSION_STRING = "YAHAN_APNI_PYROGRAM_SESSION_STRING_DAALO"
 
 # ✅ OWNER ID FOR BOT MANAGER
 OWNER_ID = 7727470646
 
-# ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = -1003892920891  
-FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
-FORCE_GROUP = "Anysnapsupport"
-
-# Main Manager Bot
+# Main Manager Bot (Userbot mode)
 bot = Client("GourisenOSINT", api_id=API_ID, api_hash=API_HASH, session_string=SESSION_STRING)
 
 # Storage for running clients
@@ -163,6 +163,7 @@ CAT_ANIMATION = ["🐈",
     "╱|、\n(˚ˎ 。7\n |、˜〵\nじしˍ,)ノ", 
     "╱|、\n(˚ˎ 。7  < Meow! 🎵\n |、˜〵\nじしˍ,)ノ" ]
 FLOWER_BLOOM = ["🌱", "🌿\n🌿\n🌿", "🌷\n🌷\n🌷", "🌹\n🌹\n🌹"]
+
 ROSE_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⢔⣒⠂⣀⣀⣤⣄⣀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣴⣿⠋⢠⣟⡼⣷⠼⣆⣼⢇⣿⣄⠱⣄
@@ -190,6 +191,7 @@ ROSE_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠇⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠋⠀⠀⠀⠀⠀⠀⠀⠀
 """
+
 HACKER_ART = r"""
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠈⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿
@@ -205,6 +207,7 @@ HACKER_ART = r"""
 ⡿⠟⠛⠉⠉⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⡀⠀⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+
 ERROR_ART = r"""
 ▒▒▒▒▒▒▒▒▄▄▄▄▄▄▄▄▒▒▒▒▒▒
 ▒▒█▒▒▒▄██████████▄▒▒▒▒
@@ -221,6 +224,7 @@ ERROR_ART = r"""
 ▒▒▒▒▒▐▀▐▒▌▀█▀▒▐▒█▒▒▒▒▒
 ▒▒▒▒▒▒▒▒▒▒▒▐▒▒▒▒▌▒▒▒▒▒
 """
+
 FUCK_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⢀⡤⠤⣄⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣾⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀
@@ -238,6 +242,7 @@ FUCK_ART = r"""
 ⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⡏⠀⠀⠀
 ⠀⠀⠀⠀⠀⠛⠒⠒⠒⠒⠒⠒⠒⠚⠃⠀⠀⠀
 """
+
 BUTTERFLY_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢔⣶⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⡼⠗⡿⣾⠀⠀
@@ -256,6 +261,7 @@ BUTTERFLY_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣱⡇⣦⢾⣾⠿⠟⠿⠷⠷⣻⠧⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⠽⠞⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+
 YOURMOM_ART = r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣶⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠐⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -270,6 +276,7 @@ YOURMOM_ART = r"""
 ⢀⣤⣤⣤⣤⣤⣿⣿⣗⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣾⣿⣿⣿⣷⣶⣶⣶⣄
 ⠸⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟
 """
+
 MYSON_ART = r"""
   ⠀     (\__/)
       (•ㅅ•)      Don’t talk to
@@ -581,93 +588,24 @@ async def allban_cmd(client, message):
     banned_count = 0
     try:
         async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True): break
+            if not active_bans.get(message.chat.id, True):
+                break
             try:
                 await client.ban_chat_member(chat_id, member.user.id)
                 banned_count += 1
                 await asyncio.sleep(0.5)
-            except: continue
-        await status_msg.edit(f"✅ **Task Finished!** Banned {banned_count} members.")
+            except Exception:
+                continue
+        await status_msg.edit(f"✅ **Mass ban completed!** Total banned: {banned_count}")
     except Exception as e:
         await status_msg.edit(f"❌ Error: {e}")
-
-@bot.on_message(filters.command("fastallban", ".") & filters.me)
-async def fastallban_cmd(client, message):
-    global active_bans
-    if len(message.command) < 2: return await message.edit("❌ Usage: `.fastallban <chat_id>`")
-    chat_id = message.command[1]
-    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
-    except: pass
-
-    active_bans[message.chat.id] = True
-    status_msg = await message.edit(f"⚡ **FAST Mass ban started...** (0.2s delay)")
-    try:
-        async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True): break
-            try:
-                await client.ban_chat_member(chat_id, member.user.id)
-                await asyncio.sleep(0.2)
-            except: continue
-        await status_msg.edit(f"✅ **Fast Ban Finished!**")
-    except Exception as e: await status_msg.edit(f"❌ Error: {e}")
-
-@bot.on_message(filters.command("end", ".") & filters.me)
-async def end_cmd(client, message):
-    global active_bans
-    if len(message.command) < 2: return await message.edit("❌ Usage: `.end <chat_id>`")
-    chat_id = message.command[1]
-    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
-    except: pass
-
-    active_bans[message.chat.id] = True
-    await message.edit(f"☠️ **NUKING GC STARTED...**")
-    try:
-        await client.set_chat_title(chat_id, "☠️ NUKED BY GOURISEN OSINT ☠️")
-        async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True): break
-            try:
-                await client.ban_chat_member(chat_id, member.user.id)
-                await asyncio.sleep(0.2)
-            except: continue
-    except Exception as e: await message.edit(f"❌ Error: {e}")
-
-@bot.on_message(filters.command("ad", ".") & filters.me)
-async def ad_cmd(client, message):
-    global ad_running, active_ad_data
-    if not message.reply_to_message:
-        return await message.edit("❌ Reply to a message to set it as an AD!")
-    
-    user_id = message.from_user.id
-    ad_running[user_id] = True
-    active_ad_data[user_id] = {
-        "chat_id": message.chat.id,
-        "msg_id": message.reply_to_message.id
-    }
-    await message.edit("📢 **Ad Broadcast Started!** (Will send to all groups every 5 mins)")
-    asyncio.create_task(run_ad_broadcast(client, user_id))
-
-@bot.on_message(filters.command("stop", ".") & filters.me)
-async def stop_cmd(client, message):
-    chat_id = message.chat.id
-    user_id = message.from_user.id
-    active_spams[chat_id] = False
-    tagall_running[chat_id] = False
-    active_bans[chat_id] = False
-    ad_running[user_id] = False
-    await message.edit("🛑 **All Running Tasks & Broadcasts Stopped!**")
-
-@bot.on_message(filters.incoming & ~filters.me)
-async def auto_reply(client, message):
-    if message.from_user and message.from_user.id in auto_reply_users:
-        msg = random.choice(SPAM_MESSAGES).format(target=auto_reply_users[message.from_user.id])
-        await message.reply(msg)
 
 # ==================== MAIN START ====================
 async def main():
     keep_alive()
-    print("Starting Gourisen OSINT...")
+    print("Starting Gourisen OSINT Bot...")
     await bot.start()
-    print("Userbot is Online! Type .help in any chat.")
+    print("Bot is Online!")
     await idle()
 
 if __name__ == "__main__":
