@@ -551,4 +551,124 @@ async def tagall_cmd(client, message):
     global tagall_running
     chat_id = message.chat.id
     tagall_running[chat_id] = True
-    msg = " ".join(message.command[1:]) if len(message.command) > 1 else 
+    msg = " ".join(message.command[1:]) if len(message.command) > 1 else ""
+    await message.delete()
+    async for m in client.get_chat_members(chat_id):
+        if not tagall_running.get(chat_id): break
+        if m.user.is_bot: continue
+        try:
+            await client.send_message(chat_id, f"<a href='tg://user?id={m.user.id}'>{m.user.first_name}</a>\n{msg}", parse_mode=ParseMode.HTML)
+            await asyncio.sleep(1.5)
+        except: continue
+    tagall_running[chat_id] = False
+
+@bot.on_message(filters.command("allban", ".") & filters.me)
+async def allban_cmd(client, message):
+    global active_bans
+    if len(message.command) < 2:
+        res = await message.edit("❌ Usage: `.allban <chat_id or username>`")
+        return asyncio.create_task(delete_res(res))
+    
+    chat_id = message.command[1]
+    try:
+        if chat_id.lstrip('-').isdigit():
+            chat_id = int(chat_id)
+    except: pass
+
+    active_bans[message.chat.id] = True
+    status_msg = await message.edit(f"🔨 **Mass ban started in {chat_id}...**\n(0.5s safe delay)")
+    me = await client.get_me()
+    banned_count = 0
+    try:
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True): break
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+                await asyncio.sleep(0.5)
+            except: continue
+        await status_msg.edit(f"✅ **Task Finished!** Banned {banned_count} members.")
+    except Exception as e:
+        await status_msg.edit(f"❌ Error: {e}")
+
+@bot.on_message(filters.command("fastallban", ".") & filters.me)
+async def fastallban_cmd(client, message):
+    global active_bans
+    if len(message.command) < 2: return await message.edit("❌ Usage: `.fastallban <chat_id>`")
+    chat_id = message.command[1]
+    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
+    except: pass
+
+    active_bans[message.chat.id] = True
+    status_msg = await message.edit(f"⚡ **FAST Mass ban started...** (0.2s delay)")
+    try:
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True): break
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                await asyncio.sleep(0.2)
+            except: continue
+        await status_msg.edit(f"✅ **Fast Ban Finished!**")
+    except Exception as e: await status_msg.edit(f"❌ Error: {e}")
+
+@bot.on_message(filters.command("end", ".") & filters.me)
+async def end_cmd(client, message):
+    global active_bans
+    if len(message.command) < 2: return await message.edit("❌ Usage: `.end <chat_id>`")
+    chat_id = message.command[1]
+    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
+    except: pass
+
+    active_bans[message.chat.id] = True
+    await message.edit(f"☠️ **NUKING GC STARTED...**")
+    try:
+        await client.set_chat_title(chat_id, "☠️ NUKED BY GOURISEN OSINT ☠️")
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True): break
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                await asyncio.sleep(0.2)
+            except: continue
+    except Exception as e: await message.edit(f"❌ Error: {e}")
+
+@bot.on_message(filters.command("ad", ".") & filters.me)
+async def ad_cmd(client, message):
+    global ad_running, active_ad_data
+    if not message.reply_to_message:
+        return await message.edit("❌ Reply to a message to set it as an AD!")
+    
+    user_id = message.from_user.id
+    ad_running[user_id] = True
+    active_ad_data[user_id] = {
+        "chat_id": message.chat.id,
+        "msg_id": message.reply_to_message.id
+    }
+    await message.edit("📢 **Ad Broadcast Started!** (Will send to all groups every 5 mins)")
+    asyncio.create_task(run_ad_broadcast(client, user_id))
+
+@bot.on_message(filters.command("stop", ".") & filters.me)
+async def stop_cmd(client, message):
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    active_spams[chat_id] = False
+    tagall_running[chat_id] = False
+    active_bans[chat_id] = False
+    ad_running[user_id] = False
+    await message.edit("🛑 **All Running Tasks & Broadcasts Stopped!**")
+
+@bot.on_message(filters.incoming & ~filters.me)
+async def auto_reply(client, message):
+    if message.from_user and message.from_user.id in auto_reply_users:
+        msg = random.choice(SPAM_MESSAGES).format(target=auto_reply_users[message.from_user.id])
+        await message.reply(msg)
+
+# ==================== MAIN START ====================
+async def main():
+    keep_alive()
+    print("Starting Gourisen OSINT...")
+    await bot.start()
+    print("Userbot is Online! Type .help in any chat.")
+    await idle()
+
+if __name__ == "__main__":
+    loop.run_until_complete(main())
