@@ -44,7 +44,7 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 # ✅ OWNER ID FOR BOT MANAGER
 OWNER_ID = 7727470646
 
-# ✅ FORCE SUBSCRIBE CONFIG
+# ✅ FORCE SUBSCRIBE CONFIG (UPDATED)
 FORCE_CHANNEL_ID = -1003387459132  
 FORCE_CHANNEL_LINK = "https://t.me/+tPyKFO-Ls4Q2YmQx" 
 FORCE_GROUP = "Anysnapsupport"
@@ -68,7 +68,7 @@ waiting_for_ad = {}
 active_ad_data = {}
 ad_running = {}
 
-# --- SHORT SPAM LIST (AS REQUESTED) ---
+# --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗢 𝗢𝗡𝗟𝗜𝗡𝗘 𝗢𝗟𝗫 𝗣𝗘 𝗕𝗘𝗖𝗛𝗨𝗡𝗚𝗔 𝗔𝗨𝗥 𝗣𝗔𝗜𝗦𝗘 𝗦𝗘 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗔 𝗞𝗢𝗧𝗛𝗔 𝗞𝗛𝗢𝗟 𝗗𝗨𝗡𝗚𝗔 😎🤩😝😍",
@@ -203,10 +203,12 @@ async def smart_edit(message, text, sleep_time=0.5):
             try:
                 await message.edit(text, parse_mode=ParseMode.HTML)
                 await asyncio.sleep(sleep_time)
-            except: pass
+            except: 
+                pass
         else:
             pass 
-    except: pass
+    except: 
+        pass
 
 async def draw_art(message, art_var, header="", footer="", chunk_size=4):
     lines = art_var.strip().split("\n")
@@ -224,18 +226,21 @@ async def draw_art(message, art_var, header="", footer="", chunk_size=4):
 
 async def delete_res(message):
     await asyncio.sleep(5)
-    try: await message.delete()
-    except: pass
+    try: 
+        await message.delete()
+    except: 
+        pass
 
 # SPEED BOOSTED SPAM FUNCTION
 async def run_spam(client, chat_id, mention, count):
     global active_spams
     for i in range(count):
-        if not active_spams.get(chat_id, False): break
+        if not active_spams.get(chat_id, False): 
+            break
         try:
             msg = random.choice(SPAM_MESSAGES).format(target=mention)
             await client.send_message(chat_id, msg, parse_mode=ParseMode.HTML)
-            await asyncio.sleep(0.1) # Exteme Speed!
+            await asyncio.sleep(0.1) # Extreme Speed!
         except FloodWait as e:
             await asyncio.sleep(e.value) # Handle Limit automatically
         except Exception:
@@ -247,11 +252,12 @@ async def run_ad_broadcast(client, user_id):
     while ad_running.get(user_id, False):
         try:
             data = active_ad_data.get(user_id)
-            if not data: break
+            if not data: 
+                break
             
-            # Har round shuru hone par saare groups me bhejna
             async for dialog in client.get_dialogs():
-                if not ad_running.get(user_id, False): break
+                if not ad_running.get(user_id, False): 
+                    break
                 
                 if dialog.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
                     try:
@@ -265,7 +271,8 @@ async def run_ad_broadcast(client, user_id):
             print(f"Ad Broadcast Error: {e}")
             
         for _ in range(300):
-            if not ad_running.get(user_id, False): break
+            if not ad_running.get(user_id, False): 
+                break
             await asyncio.sleep(1)
 
 # ==================== ART ASSETS ====================
@@ -425,10 +432,13 @@ async def help_handler(client, message):
 📢 `.ad` - Auto-Broadcast Ad to all Groups (Every 5 min)
 🛑 `.stop` - Stop Tasks
 """
-    try: await message.edit(text)
+    try: 
+        await message.edit(text)
     except:
-        try: await client.send_message(message.chat.id, text)
-        except: pass
+        try: 
+            await client.send_message(message.chat.id, text)
+        except: 
+            pass
 
 async def cat_handler(client, message):
     for frame in CAT_ANIMATION:
@@ -490,8 +500,10 @@ async def info_cmd(client, message):
     try:
         user = await client.get_users(target_id)
         chat = await client.get_chat(target_id)
-        try: common = len(await client.get_common_chats(user.id))
-        except: common = 0
+        try: 
+            common = len(await client.get_common_chats(user.id))
+        except: 
+            common = 0
         status_map = {UserStatus.ONLINE:"Online 🟢", UserStatus.OFFLINE:"Offline ⚫", UserStatus.RECENTLY:"Recently 🟡"}
         status = status_map.get(user.status, "Unknown")
         link = f"<a href='tg://user?id={user.id}'>ㅤ❛ .𝁘ໍ⸼ ‌‌ 𝐌 𝐀 𝐆 𝐌 𝐀 𐏓𝟑 🪙</a>" if user.id == 8081343902 else f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
@@ -518,7 +530,8 @@ async def info_cmd(client, message):
         if photos:
             await status_msg.delete()
             await client.send_photo(message.chat.id, photo=photos[0].file_id, caption=caption, parse_mode=ParseMode.HTML)
-        else: await status_msg.edit(caption, parse_mode=ParseMode.HTML)
+        else: 
+            await status_msg.edit(caption, parse_mode=ParseMode.HTML)
     except Exception as e: 
         await status_msg.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(status_msg))
@@ -547,7 +560,8 @@ async def clone_cmd(client, message):
             await client.set_profile_photo(photo=path)
             if os.path.exists(path): os.remove(path)
         res = await message.edit(f"✅ Cloned: {target.first_name}")
-    except Exception as e: res = await message.edit(f"❌ Error: {e}")
+    except Exception as e: 
+        res = await message.edit(f"❌ Error: {e}")
     asyncio.create_task(delete_res(res))
 
 async def back_cmd(client, message):
@@ -563,7 +577,8 @@ async def back_cmd(client, message):
         if "photo" in data:
             await client.set_profile_photo(photo=data["photo"])
         res = await message.edit("✅ Profile Restored!")
-    except Exception as e: res = await message.edit(f"❌ Error: {e}")
+    except Exception as e: 
+        res = await message.edit(f"❌ Error: {e}")
     asyncio.create_task(delete_res(res))
 
 # UPGRADED ANYSNAP COMMAND
@@ -575,11 +590,9 @@ async def anysnap_cmd(client, message):
     count = 0
     
     try:
-        # Case 1: Reply mode (.anysnap 50)
         if message.reply_to_message and len(args) == 2:
             count = int(args[1])
             target_user = message.reply_to_message.from_user
-        # Case 2: Direct Username/ID mode (.anysnap @username 50)
         elif len(args) >= 3:
             target_str = args[1]
             count = int(args[2])
@@ -651,12 +664,15 @@ async def tagall_cmd(client, message):
     msg = " ".join(message.command[1:]) if len(message.command) > 1 else ""
     await message.delete()
     async for m in client.get_chat_members(chat_id):
-        if not tagall_running.get(chat_id): break
-        if m.user.is_bot: continue
+        if not tagall_running.get(chat_id): 
+            break
+        if m.user.is_bot: 
+            continue
         try:
             await client.send_message(chat_id, f"<a href='tg://user?id={m.user.id}'>{m.user.first_name}</a>\n{msg}", parse_mode=ParseMode.HTML)
             await asyncio.sleep(1.5)
-        except: continue
+        except: 
+            continue
     tagall_running[chat_id] = False
 
 async def allban_cmd(client, message):
@@ -669,13 +685,12 @@ async def allban_cmd(client, message):
     try:
         if chat_id.lstrip('-').isdigit():
             chat_id = int(chat_id)
-    except: pass
+    except: 
+        pass
 
     active_bans[message.chat.id] = True
     status_msg = await message.edit(f"🔨 **Mass ban started in {chat_id}...**\n(0.5s safe delay)")
     me = await client.get_me()
     banned_count = 0
     try:
-        async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True):
-      
+        async for member in client.get_chat_member
