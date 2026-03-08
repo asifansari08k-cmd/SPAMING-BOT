@@ -578,4 +578,328 @@ async def allban_cmd(client, message):
     me = await client.get_me()
     banned_count = 0
     try:
-        async for member in client.get_chat_member
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True):
+                await status_msg.edit(f"🛑 **Mass ban stopped!** Banned {banned_count} members.")
+                return
+            if member.user.id == me.id: 
+                continue
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+                await asyncio.sleep(0.5)
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+            except Exception: 
+                continue
+                
+        if active_bans.get(message.chat.id, True):
+            await status_msg.edit(f"✅ **Mass ban complete!** Successfully banned {banned_count} members.")
+    except Exception as e:
+        await status_msg.edit(f"❌ **Error:** {e}")
+        asyncio.create_task(delete_res(status_msg))
+
+async def fastallban_cmd(client, message):
+    global active_bans
+    if len(message.command) < 2:
+        res = await message.edit("❌ Usage: `.fastallban <chat_id or username>`")
+        return asyncio.create_task(delete_res(res))
+    
+    chat_id = message.command[1]
+    try:
+        if chat_id.lstrip('-').isdigit():
+            chat_id = int(chat_id)
+    except: 
+        pass
+
+    active_bans[message.chat.id] = True
+    status_msg = await message.edit(f"⚡ **FAST Mass ban started in {chat_id}...**\n(Random delay 0.2s - 0.3s)")
+    me = await client.get_me()
+    banned_count = 0
+    try:
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True):
+                await status_msg.edit(f"🛑 **Fast Mass ban stopped!** Banned {banned_count} members.")
+                return
+            if member.user.id == me.id: 
+                continue
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+                await asyncio.sleep(random.uniform(0.2, 0.3)) 
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+            except Exception: 
+                continue
+                
+        if active_bans.get(message.chat.id, True):
+            await status_msg.edit(f"✅ **Fast Mass ban complete!** Successfully banned {banned_count} members.")
+    except Exception as e:
+        await status_msg.edit(f"❌ **Error:** {e}")
+        asyncio.create_task(delete_res(status_msg))
+
+async def end_cmd(client, message):
+    global active_bans
+    if len(message.command) < 2:
+        res = await message.edit("❌ Usage: `.end <chat_id or username>`")
+        return asyncio.create_task(delete_res(res))
+    
+    chat_id = message.command[1]
+    try:
+        if chat_id.lstrip('-').isdigit():
+            chat_id = int(chat_id)
+    except: 
+        pass
+
+    active_bans[message.chat.id] = True
+    status_msg = await message.edit(f"☠️ **EXTREME NUKE GC started in {chat_id}...**\n(1. Mass Ban [0.1s] -> 2. Change Title -> 3. Tag & Pin)")
+    me = await client.get_me()
+    banned_count = 0
+    
+    # 1. EXTREME FAST MASS BAN (0.1s delay)
+    try:
+        async for member in client.get_chat_members(chat_id):
+            if not active_bans.get(message.chat.id, True):
+                await status_msg.edit(f"🛑 **Nuke stopped!** Banned {banned_count} members.")
+                return
+            if member.user.id == me.id: 
+                continue
+            try:
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+                await asyncio.sleep(0.1)  # Extreme push
+            except FloodWait as e:
+                await asyncio.sleep(e.value)
+                await client.ban_chat_member(chat_id, member.user.id)
+                banned_count += 1
+            except Exception: 
+                continue
+    except Exception:
+        pass 
+
+    if not active_bans.get(message.chat.id, True):
+        return
+
+    # 2. CHANGE TITLE
+    try:
+        await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
+    except Exception:
+        pass
+
+    # 3. FIND OWNER
+    owner_mention = "Owner"
+    try:
+        async for admin in client.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS):
+            if admin.status == ChatMemberStatus.OWNER:
+                owner_mention = f"<a href='tg://user?id={admin.user.id}'>{admin.user.first_name}</a>"
+                break
+    except Exception:
+        pass
+
+    # 4. SEND MESSAGE AND PIN IT
+    try:
+        final_text = f"{owner_mention}\nME KYA LADLE MEAOOOUUUUUU\nGOP GOP GOP GOP GOP 🥳"
+        sent_msg = await client.send_message(chat_id, final_text, parse_mode=ParseMode.HTML)
+        try:
+            await sent_msg.pin(both_sides=True)
+        except Exception:
+            try:
+                await sent_msg.pin() 
+            except:
+                pass
+    except Exception:
+        pass
+
+    await status_msg.edit(f"✅ **Nuke complete!** Banned {banned_count} members, changed title, tagged owner and pinned message.")
+
+# --- AD COMMAND ---
+async def ad_cmd(client, message):
+    global waiting_for_ad
+    me = await client.get_me()
+    waiting_for_ad[me.id] = True
+    await message.edit("📝 **AD SETUP:**\nAb yahan wo message bhejiye jo aap har group mein Ad ki tarah bhejna chahte hain. (Aap Media, Links ya Text kuch bhi bhej sakte hain).")
+
+async def ad_catcher(client, message):
+    global waiting_for_ad, active_ad_data, ad_running
+    me = await client.get_me()
+    
+    if waiting_for_ad.get(me.id, False):
+        if message.text and message.text.startswith("."): 
+            return
+        
+        waiting_for_ad[me.id] = False
+        active_ad_data[me.id] = {"chat_id": message.chat.id, "msg_id": message.id}
+        ad_running[me.id] = True
+        
+        await message.reply("✅ **Ad Set Successfully!**\nAb ye message har 5 minute mein aapke sabhi groups mein broadcast hoga.\n🛑 Rokne ke liye `.stop` bhejein.")
+        
+        asyncio.create_task(run_ad_broadcast(client, me.id))
+
+async def stop_cmd(client, message):
+    global active_spams, tagall_running, auto_reply_users, active_bans, ad_running, waiting_for_ad
+    me = await client.get_me()
+    active_spams[message.chat.id] = False
+    tagall_running[message.chat.id] = False
+    active_bans[message.chat.id] = False 
+    ad_running[me.id] = False
+    waiting_for_ad[me.id] = False
+    auto_reply_users.clear()
+    res = await message.edit("🛑 **All Stopped!** (Spam, Ban, Nuke, Tagall, Auto-Reply & Ad Broadcast Cleared)")
+    asyncio.create_task(delete_res(res))
+
+async def auto_reply_listener(client, message):
+    global auto_reply_users
+    if not message.from_user: 
+        return
+    if message.from_user.id in auto_reply_users:
+        mention = auto_reply_users[message.from_user.id]
+        msg = random.choice(SPAM_MESSAGES).format(target=mention)
+        try: 
+            await message.reply(msg, parse_mode=ParseMode.HTML)
+        except: 
+            pass
+
+# ==================== MAIN BOT LOGIC ====================
+
+async def check_manager_force_subscribe(client, message):
+    user_id = message.from_user.id
+    if user_id == OWNER_ID:
+        return True
+        
+    try:
+        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
+        await client.get_chat_member(FORCE_GROUP, user_id)
+        return True
+    except UserNotParticipant:
+        buttons = [
+            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
+            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
+        ]
+        await message.reply(
+            "**⛔ ACCESS DENIED!**\n\n"
+            "You must join our Channel and Group to use this bot.\n"
+            "Join then try again!",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return False
+    except Exception as e:
+        print(f"FS Error: {e}")
+        return True 
+
+@bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
+async def set_custom_start(client, message):
+    global CUSTOM_START
+    if not message.reply_to_message:
+        await message.reply("❌ **Owner Sir**, please reply to any message (text, photo, video) with `/addstart` to set it as the new welcome message.")
+        return
+    
+    CUSTOM_START = {
+        "chat_id": message.chat.id,
+        "message_id": message.reply_to_message.id
+    }
+    await message.reply("✅ **Custom Start Message Set Successfully!**\nNow new users will see this exact message (with media) after passing the Force Subscribe.")
+
+@bot.on_message(filters.command("start") & filters.private)
+async def start_cmd(client, message):
+    if not await check_manager_force_subscribe(client, message):
+        return
+
+    if CUSTOM_START:
+        try:
+            await client.copy_message(
+                chat_id=message.chat.id,
+                from_chat_id=CUSTOM_START["chat_id"],
+                message_id=CUSTOM_START["message_id"]
+            )
+            return
+        except Exception as e:
+            print(f"Custom Start Error: {e}")
+
+    text = """
+🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
+
+**I can help you run the powerful Magma Userbot on your Telegram account.**
+
+✨ **HOW TO START:**
+
+1️⃣ **Get Session:**
+   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
+
+2️⃣ **Connect:**
+   Send the session here using the add command:
+   `/add <your_string_session>`
+
+3️⃣ **Enjoy:**
+   Once connected, type `.help` in your Saved Messages to see commands!
+
+⚠️ **Note:** Keep your session safe!
+"""
+    await message.reply(text, parse_mode=ParseMode.HTML)
+
+@bot.on_message(filters.command("add") & filters.private)
+async def add_session_handler(client, message):
+    if not await check_manager_force_subscribe(client, message):
+        return
+
+    if len(message.command) < 2:
+        await message.reply("❌ Usage: `/add <StringSession>`")
+        return
+
+    session_string = message.text.split(None, 1)[1]
+    msg = await message.reply("🔄 Connecting...")
+
+    try:
+        new_user = Client(
+            name=f"user_{random.randint(1000, 9999)}",
+            api_id=API_ID,
+            api_hash=API_HASH,
+            session_string=session_string,
+            in_memory=True
+        )
+
+        await new_user.start()
+        me = await new_user.get_me()
+
+        new_user.add_handler(MessageHandler(ad_catcher, filters.me))
+        
+        new_user.add_handler(MessageHandler(ad_cmd, filters.command("ad", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(help_handler, filters.command("help", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(cat_handler, filters.command("cat", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(rose_handler, filters.command("rose", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(hacker_handler, filters.command("hacker", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(error_handler, filters.command("error", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(fuck_handler, filters.command("fuck", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(butterfly_handler, filters.command("butterfly", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(love_handler, filters.command("love", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(yourmom_handler, filters.command("yourmom", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(myson_handler, filters.command("myson", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(info_cmd, filters.command("info", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(clone_cmd, filters.command("clone", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(back_cmd, filters.command("back", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("anysnap", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(custom_spam_cmd, filters.command("spam", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("aanysnap", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(tagall_cmd, filters.command("tagall", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(allban_cmd, filters.command("allban", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(fastallban_cmd, filters.command("fastallban", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(end_cmd, filters.command("end", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(stop_cmd, filters.command("stop", prefixes=".") & filters.me))
+
+        new_user.add_handler(MessageHandler(auto_reply_listener, filters.incoming & ~filters.me))
+
+        running_users[me.id] = new_user
+
+        await msg.edit(f"✅ **Connected Successfully!**\nUser: {me.first_name}\nID: `{me.id}`\n\nMagma Bot is now active on your account.")
+        print(f"User {me.first_name} started.")
+
+    except Exception as e:
+        await msg.edit(f"❌ **Connection Failed!**\nError: {e}")
+
+print("✅ Magma Manager Bot Online - Force Subscribe Active!")
+
+keep_alive()
+bot.run()
