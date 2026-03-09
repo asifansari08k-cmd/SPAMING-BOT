@@ -43,11 +43,6 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
-# ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = -1003892920891  
-FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
-FORCE_GROUP = "Anysnapsupport"
-
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -66,12 +61,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- START MESSAGE STORAGE (EXACTLY AS YOU PROVIDED) ---
+# --- NEW START MESSAGE STORAGE (PREMIUM EMOJI FIX) ---
 START_DATA = {
-    "type": "text",      # Ye batayega ki photo hai, video hai ya text
-    "file_id": None,     # Media ka unique code
-    "text": None,        # Aapka message ya caption
-    "entities": None     # Aapke Premium Emojis/Quotes
+    "type": "text",      
+    "file_id": None,     
+    "text": None,        
+    "entities": None     
 }
 
 # --- SHORT SPAM LIST ---
@@ -83,28 +78,6 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
-
-async def check_force_subscribe(client, message):
-    user_id = message.from_user.id
-    try:
-        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
-        await client.get_chat_member(FORCE_GROUP, user_id)
-        return True
-    except UserNotParticipant:
-        buttons = [
-            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
-            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
-        ]
-        await message.reply(
-            "**⛔ ACCESS DENIED!**\n\n"
-            "You must join our Channel and Group to use this bot.\n"
-            "Join then try again!",
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-        return False
-    except Exception as e:
-        print(f"FS Error: {e}")
-        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -775,7 +748,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 START COMMAND CONFIG - EXACTLY AS PROVIDED BY YOU 🟢
+
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -816,31 +789,37 @@ async def save_start_with_media(client, message):
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
-    if not await check_force_subscribe(client, message):
-        return
-
     global START_DATA
 
-    # Ab check karte hain bot ke dimaag mein kya save hai
+    buttons = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
+            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url="https://t.me/your_username_here")]
+        ]
+    )
+
     try:
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                caption_entities=START_DATA["entities"], 
+                reply_markup=buttons
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                caption_entities=START_DATA["entities"], 
+                reply_markup=buttons
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"]
+                entities=START_DATA["entities"], 
+                reply_markup=buttons
             )
             
         else:
@@ -863,7 +842,7 @@ async def start_cmd(client, message):
 
 ⚠️ **Note:** Keep your session safe!
 """
-            await message.reply_text(text)
+            await message.reply_text(text, reply_markup=buttons)
             
     except Exception as e:
         print(f"Start Error: {e}")
@@ -872,8 +851,6 @@ async def start_cmd(client, message):
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
-    if not await check_force_subscribe(client, message):
-        return
 
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
