@@ -1,12 +1,12 @@
 import asyncio
 
-# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ (NO MORE RUNTIME ERROR) ---
+# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
 try:
     loop = asyncio.get_running_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-# -----------------------------------------------------------------------
+# -----------------------------------------------
 
 import random
 import os
@@ -44,8 +44,8 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
 # ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = -1003892920891  
-FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
+FORCE_CHANNEL_ID = -1003387459132  
+FORCE_CHANNEL_LINK = "https://t.me/+tPyKFO-Ls4Q2YmQx" 
 FORCE_GROUP = "Anysnapsupport"
 
 # Main Manager Bot
@@ -66,12 +66,11 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (PREMIUM EMOJI SUPPORT) ---
+# --- NEW START MESSAGE STORAGE (100% EXACT CLONE LOGIC) ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
-    "text": None,        
-    "entities": None     
+    "text": None         
 }
 
 # --- SHORT SPAM LIST ---
@@ -79,7 +78,122 @@ SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗢 𝗢𝗡𝗟𝗜𝗡𝗘 𝗢𝗟𝗫 𝗣𝗘 𝗕𝗘𝗖𝗛𝗨𝗡𝗚𝗔 𝗔𝗨𝗥 𝗣𝗔𝗜𝗦𝗘 𝗦𝗘 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗔 𝗞𝗢𝗧𝗛𝗔 𝗞𝗛𝗢𝗟 𝗗𝗨𝗡𝗚𝗔 😎🤩😝😍",
     "{target} 𝗧𝗘𝗥𝗜 𝗚𝗙 𝗛𝗘 𝗕𝗔𝗗𝗜 𝗦𝗘𝗫𝗬 𝗨𝗦𝗞𝗢 𝗣𝗜𝗟𝗔𝗞𝗘 𝗖𝗛𝗢𝗢𝗗𝗘𝗡𝗚𝗘 𝗣𝗘𝗣𝗦𝗜",
-    "{target} 𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘 𝗥𝗘𝗛𝗧𝗔 𝗛𝗘 𝗦𝗔𝗡𝗗 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 𝗢𝗥 𝗕𝗔𝗡𝗔 𝗗𝗜𝗔 𝗥𝗔𝗡𝗗 🤤🤣"
+    "{target} 𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘 𝗥𝗘𝗛𝗧𝗔 𝗛𝗘 𝗦𝗔𝗡𝗗 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 𝗢𝗥 𝗕𝗔𝗡𝗔 𝗗𝗜𝗔 𝗥𝗔𝗡𝗗 🤤🤣",
+    "{target} 𝗔𝗕𝗘 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗖𝗛𝗢𝗗𝗨 𝗥𝗔𝗡𝗗𝗜𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗞𝗨𝗧𝗧𝗘 𝗞𝗘 𝗖𝗛𝗢𝗗𝗘 😂👻🔥",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗔𝗞𝗘 𝗡𝗨𝗗𝗘𝗦 𝗚𝗢𝗢𝗚𝗟𝗘 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥𝗗𝗨𝗡𝗚𝗔 𝗕𝗘𝗛𝗘𝗡 𝗞𝗘 𝗟𝗔𝗘𝗪𝗗𝗘 👻🔥",
+    "{target} 𝗬𝗘 𝗟𝗗𝗡𝗚𝗘 𝗕𝗔𝗣𝗣 𝗦𝗘",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗨𝗧 𝗠𝗘𝗜 𝗔𝗣𝗣𝗟𝗘 𝗞𝗔 𝟭𝟴𝗪 𝗪𝗔𝗟𝗔 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 🔥🤩",
+    "{target} 𝗥𝗔𝗡𝗗𝗜 𝗞𝗛𝗔𝗡𝗘 𝗞𝗜 𝗨𝗟𝗔𝗗𝗗𝗗",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔́𝗔̀ 𝗞𝗘 𝗕𝗛𝗢𝗦𝗗𝗔 𝗜𝗧𝗡𝗔 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 𝗞𝗜 𝗧𝗨 𝗖𝗔𝗛 𝗞𝗘 𝗕𝗛𝗜 𝗪𝗢 𝗠𝗔𝗦𝗧 𝗖𝗛𝗨𝗗𝗔𝗜 𝗦𝗘 𝗗𝗨𝗥 𝗡𝗛𝗜 𝗝𝗔 𝗣𝗔𝗬𝗘𝗚𝗘𝗔 😏😏🤩😍",
+    "{target} 𝗞𝗬𝗔 𝗠𝗔𝗧𝗟𝗔𝗕 𝗟𝗢𝗚 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗖𝗛𝗢𝗗 𝗝𝗔𝗔𝗧𝗘 𝗛𝗘𝗡 𝗣𝗔𝗥 𝗣𝗔𝗜𝗦𝗘 𝗡𝗛𝗜 𝗗𝗘𝗞𝗘 𝗝𝗔𝗔𝗧𝗘 🥲 🤣 😂😂",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗔𝗔𝗧 𝗞𝗘 🤱 𝗚𝗔𝗟𝗜 𝗞𝗘 𝗞𝗨𝗧𝗧𝗢 🦮 𝗠𝗘 𝗕𝗔𝗔𝗧 𝗗𝗨𝗡𝗚𝗔 𝗣𝗛𝗜𝗥 🍞 𝗕𝗥𝗘𝗔𝗗 𝗞𝗜 𝗧𝗔𝗥𝗛 𝗞𝗛𝗔𝗬𝗘𝗡𝗚𝗘 𝗪𝗢 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 😂",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗘 𝗕𝗛𝗢𝗦𝗗𝗘 𝗠𝗘𝗜 𝗦𝗣𝗢𝗧𝗜𝗙𝗬 𝗗𝗔𝗟 𝗞𝗘 𝗟𝗢𝗙𝗜 𝗕𝗔𝗝𝗔𝗨𝗡𝗚𝗔 𝗗𝗜𝗡 𝗕𝗛𝗔𝗥 😍🎶🎶💥",
+    "{target} 𝗧𝗘𝗥Ａ 𝗠𝗔𝗔 𝗠𝗘𝗥𝗜 𝗙𝗔𝗡",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢𝗧𝗢 𝗖𝗛𝗢𝗗 𝗖𝗛𝗢𝗗𝗞𝗘 𝗣𝗨𝗥𝗔 𝗙𝗔𝗔𝗗 𝗗𝗜𝗔 𝗖𝗛𝗨𝗧𝗛 𝗔𝗕𝗕 𝗧𝗘𝗥𝗜 𝗚𝗙 𝗞𝗢 𝗕𝗛𝗘𝗝 😆💦🤤",
+    "{target} 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗚𝗛𝗨𝗧𝗞𝗔 𝗞𝗛𝗔𝗔𝗞𝗞𝗘 𝗧𝗛𝗢𝗢𝗞 𝗗𝗨𝗡𝗚𝗔 🤣🤣",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔 𝗞𝗜 𝗖𝗛𝗨𝗤 𝗠 𝗗𝗨 𝗧𝗔𝗣𝗔 𝗧𝗔𝗣?",
+    "{target} 𝗠𝗘𝗥𝗘 𝗟𝗨𝗡𝗗 𝗞𝗘 𝗕𝗔𝗔𝗔𝗔𝗔𝗟𝗟𝗟𝗟𝗟",
+    "{target} 𝗔𝗕𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗠𝗔𝗗𝗘𝗥𝗖𝗛𝗢𝗢𝗗 𝗞𝗥 𝗣𝗜𝗟𝗟𝗘 𝗣𝗔𝗣𝗔 𝗦𝗘 𝗟𝗔𝗗𝗘𝗚𝗔 𝗧𝗨 😼😂🤤",
+    "{target} 𝗦𝗨𝗡 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗 𝗝𝗬𝗔𝗗𝗔 𝗡𝗔 𝗨𝗖𝗛𝗔𝗟 𝗠𝗔𝗔 𝗖𝗛𝗢𝗗 𝗗𝗘𝗡𝗚𝗘 𝗘𝗞 𝗠𝗜𝗡 𝗠𝗘𝗜 ✅🤣🔥🤩",
+    "{target} 𝗧𝗘𝗥𝗜 𝗩𝗔𝗛𝗘𝗘𝗡 𝗡𝗛𝗜 𝗛𝗔𝗜 𝗞𝗬𝗔? 𝟵 𝗠𝗔𝗛𝗜𝗡𝗘 𝗥𝗨𝗞 𝗦𝗔𝗚𝗜 𝗩𝗔𝗛𝗘𝗘𝗡 𝗗𝗘𝗧𝗔 𝗛𝗨 🤣🤣🤩",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗡 𝗞𝗜 𝗖𝗛𝗨𝗤 𝗠𝗘 𝗞𝗘𝗟𝗘 𝗞𝗘 𝗖𝗛𝗜𝗟𝗞𝗘 🍌🍌😍",
+    "{target} 𝗧𝗨 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗧𝗘𝗥𝗔 𝗞𝗛𝗔𝗡𝗗𝗔𝗡 𝗦𝗔𝗕 𝗕𝗔𝗛𝗘𝗡 𝗞𝗘 𝗟𝗔𝗪𝗗𝗘 𝗥𝗔𝗡𝗗𝗜 𝗛𝗔𝗜 𝗥𝗔𝗡𝗗𝗜 🤢✅🔥",
+    "{target} 𝗦𝗔𝗕 𝗕𝗢𝗟𝗧𝗘 𝗠𝗨𝗝𝗛𝗞𝗢 𝗣𝗔𝗣𝗔 𝗞𝗬𝗢𝗨𝗡𝗞𝗜 𝗠𝗘𝗡𝗘 𝗕𝗔𝗡𝗔𝗗𝗜𝗔 𝗧𝗘𝗥𝗜 𝗠𝗔́𝗔̀𝗞𝗢 𝗣𝗥𝗘𝗚𝗡𝗘𝗡𝗧 🤣🤣",
+    "{target} 𝗛𝗔𝗥𝗜 𝗛𝗔𝗥𝗜 𝗚𝗛𝗔𝗔𝗦 𝗠𝗘 𝗝𝗛𝗢𝗣𝗗𝗔 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 🤣🤣💋💦",
+    "{target} 𝗥𝗔𝗡𝗗𝗜 𝗞𝗘 𝗕𝗔𝗖𝗛𝗘",
+    "{target} 𝗔𝗔𝗝 𝗧𝗘𝗥𝗔 𝗞𝗛𝗔𝗡𝗗𝗔𝗡 𝗫𝗛𝗨𝗗𝗘𝗚𝗔 💦🍆🍑",
+    "{target} 𝗔𝗥𝗘 𝗥𝗘 𝗠𝗘𝗥𝗘 𝗕𝗘𝗧𝗘 𝗞𝗬𝗢𝗨𝗡 𝗦𝗣𝗘𝗘𝗗 𝗣𝗔𝗞𝗔𝗗 𝗡𝗔 𝗣𝗔𝗔𝗔 𝗥𝗔𝗛𝗔 𝗔𝗣𝗡𝗘 𝗕𝗔𝗔𝗣 𝗞𝗔 𝗛𝗔𝗛𝗔𝗛 🤣",
+    "{target} 𝗦𝗛𝗔𝗥𝗔𝗠 𝗞𝗔𝗥 𝗧𝗘𝗥𝗜 𝗕𝗘́𝗛𝗘𝗡 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗞𝗜𝗧𝗡𝗔 𝗚𝗔𝗔𝗟𝗜𝗔 𝗦𝗨𝗡𝗪𝗔𝗬𝗘𝗚𝗔 𝗔𝗣𝗡𝗜 𝗠𝗔́𝗔̀𝗔 𝗕𝗘́𝗛𝗘𝗡 𝗞𝗘 𝗨𝗣𝗘𝗥",
+    "{target} 𝗔𝗨𝗞𝗔𝗔𝗧 𝗠𝗘 𝗥𝗘𝗛 𝗩𝗥𝗡𝗔 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘 𝗗𝗔𝗡𝗗𝗔 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗠𝗨𝗛 𝗦𝗘 𝗡𝗜𝗞𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 𝗦𝗛𝗔𝗥𝗜𝗥 𝗕𝗛𝗜 𝗗𝗔𝗡𝗗𝗘 𝗝𝗘𝗦𝗔 𝗗𝗜𝗞𝗛𝗘𝗚𝗔 🙄🤭🤭",
+    "{target} 𝗧𝗘𝗥𝗜 𝗦𝗘𝗫𝗬 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗤 𝗢𝗣",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗔𝗞𝗜 𝗖𝗛𝗨𝗗𝗔𝗜 𝗞𝗢 𝗣𝗢𝗥𝗡𝗛𝗨𝗕.𝗖𝗢𝗠 𝗣𝗘 𝗨𝗣𝗟𝗢𝗔𝗗 𝗞𝗔𝗥𝗗𝗨𝗡𝗚𝗔 𝗦𝗨𝗔𝗥 𝗞𝗘 𝗖𝗛𝗢𝗗𝗘 🤣💋💦",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗜 𝗙𝗔𝗡𝗧𝗔𝗦𝗬 𝗛𝗨 𝗟𝗔𝗪𝗗𝗘, 𝗧𝗨 𝗔𝗣𝗡𝗜 𝗕𝗛𝗘𝗡 𝗞𝗢 𝗦𝗠𝗕𝗛𝗔𝗔𝗹 😈😈",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗨𝗧 𝗠𝗘𝗜 𝗖++ 𝗦𝗧𝗥𝗜𝗡𝗚 𝗘𝗡𝗖𝗥𝗬𝗣𝗧𝗜𝗢𝗡 𝗟𝗔𝗚𝗔 𝗗𝗨𝗡𝗚𝗔 𝗕𝗔𝗛𝗧𝗜 𝗛𝗨𝗬𝗜 𝗖𝗛𝗨𝗨𝗧 𝗥𝗨𝗞 𝗝𝗔𝗬𝗘𝗚𝗜𝗜𝗜𝗜 😈🔥😍",
+    "{target} 𝗧𝗨𝗝𝗛𝗘 𝗔𝗕 𝗧𝗔𝗞 𝗡𝗔𝗛𝗜 𝗦𝗠𝗝𝗛 𝗔𝗬𝗔 𝗞𝗜 𝗠𝗔𝗜 𝗛𝗜 𝗛𝗨 𝗧𝗨𝗝𝗛𝗘 𝗣𝗔𝗜𝗗𝗔 𝗞𝗔𝗥𝗡𝗘 𝗪𝗔𝗟𝗔 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘𝗘 𝗔𝗣𝗡𝗜 𝗠𝗔𝗔 𝗦𝗘 𝗣𝗨𝗖𝗛 𝗥𝗔𝗡𝗗𝗜 𝗞𝗘 𝗕𝗔𝗖𝗛𝗘𝗘𝗘𝗘 🤩👊👤😍",
+    "{target} 𝗞𝗬𝗔 𝗠𝗔𝗧𝗟𝗔𝗕 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗠𝗘𝗥𝗘 𝗟𝗢𝗗𝗘 𝗞𝗜 𝗗𝗜𝗘 𝗛𝗔𝗥𝗗 𝗙𝗔𝗡 𝗛𝗔𝗜 🔥😂💋",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗕𝗔𝗧𝗧𝗘𝗥𝗬 𝗟𝗔𝗚𝗔 𝗞𝗘 𝗣𝗢𝗪𝗘𝗥𝗕𝗔𝗡𝗞 𝗕𝗔𝗡𝗔 𝗗𝗨𝗡𝗚𝗔 🔋 🔥🤩",
+    "{target} 𝗧𝗨𝗝𝗛𝗘 𝗗𝗘𝗞𝗛 𝗞𝗘 𝗧𝗘𝗥𝗜 𝗥Æ𝗡𝗗𝗜 𝗕𝗔𝗛𝗘𝗡 𝗣𝗘 𝗧𝗔𝗥𝗔𝗦 𝗔𝗧𝗔 𝗛𝗔𝗜 𝗠𝗨𝗝𝗛𝗘 𝗕𝗔𝗛𝗘𝗡 𝗞𝗘 𝗟𝗢𝗗𝗘𝗘𝗘𝗘 👿💥🤩🔥",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗘 𝗕𝗛𝗢𝗦𝗗𝗘 𝗠𝗘𝗜 𝗛𝗔𝗜𝗥 𝗗𝗥𝗬𝗘𝗥 𝗖𝗛𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔𝗔 💥🔥🔥",
+    "{target} 𝗠𝗜𝗚𝗛𝗧𝗬 𝗨𝗦𝗘𝗥 𝗛𝗘𝗡 𝗛𝗨𝗠, 𝗛𝗨𝗠𝗞𝗢 𝗞𝗘𝗛𝗧𝗘 𝗛𝗘𝗡 𝗢𝗣 𝗔𝗨𝗥 𝗕𝗘𝗧𝗘 𝗧𝗨𝗠 𝗛𝗔𝗠𝗔𝗥𝗘 𝗟𝗨𝗡𝗗 𝗞𝗜 𝗧𝗢𝗣𝗜 😂",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗞𝗔𝗔𝗟𝗜 𝗠𝗜𝗧𝗖𝗛",
+    "{target} 𝗧𝗘𝗥𝗜𝗜𝗜𝗜𝗜𝗜𝗜 𝗠𝗔𝗔𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧𝗧𝗧 𝗠𝗘 𝗔𝗕𝗖𝗗 𝗟𝗜𝗞𝗛 𝗗𝗨𝗡𝗚𝗔 𝗠𝗔𝗔 𝗞𝗘 𝗟𝗢𝗗𝗘",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗢𝗡𝗘𝗣𝗟𝗨𝗦 𝗞𝗔 𝗪𝗥𝗔𝗣 𝗖𝗛𝗔𝗥𝗚𝗘𝗥 𝟯𝟬𝗪 𝗛𝗜𝗚𝗛 𝗣𝗢𝗪𝗘𝗥 💥😂😎",
+    "{target} 𝗧𝗘𝗥𝗜 𝗜𝗧𝗘𝗠 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘 𝗟𝗨𝗡𝗗 𝗗𝗔𝗔𝗟𝗞𝗘, 𝗧𝗘𝗥𝗘 𝗝𝗔𝗜𝗦𝗔 𝗘𝗞 𝗢𝗥 𝗡𝗜𝗞𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗 😆🤤💋",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 ✋ 𝗛𝗔𝗧𝗧𝗛 𝗗𝗔𝗟𝗞𝗘 👶 𝗕𝗔𝗖𝗖𝗛𝗘 𝗡𝗜𝗞𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 😍",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝗕𝗜𝗚𝗦𝗣𝗔𝗠 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗙𝗨𝗖𝗞 𝗟𝗔𝗚𝗔𝗔 𝗗𝗨 🤩🥳🔥",
+    "{target} 𝗥𝗔𝗡𝗗𝗜𝗞𝗘 𝗕𝗔𝗖𝗛𝗛𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗𝗨 𝗖𝗛𝗔𝗟 𝗡𝗜𝗞𝗔𝗟",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗔 𝗞𝗢 𝗛𝗢𝗥𝗟𝗜𝗖𝗞𝗦 𝗣𝗜𝗟𝗔𝗨𝗡𝗚𝗔 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗",
+    "{target} 𝗦𝗨𝗡 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗔𝗨𝗥 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗔 𝗕𝗛𝗜 𝗕𝗛𝗢𝗦𝗗𝗔 👿😎👊",
+    "{target} 𝗧𝗘𝗥𝗜 𝗥Æ𝗡𝗗𝗜 𝗠𝗔́𝗔̀ 𝗦𝗘 𝗣𝗨𝗖𝗛𝗡𝗔 𝗕𝗔𝗔𝗣 𝗞𝗔 𝗡𝗔𝗔𝗠 𝗕𝗔𝗛𝗘𝗡 𝗞𝗘 𝗟𝗢𝗗𝗘𝗘𝗘𝗘𝗘 🤩🥳😳",
+    "{target} 𝗧𝗘𝗥𝗜 𝗚𝗙 𝗞𝗢 𝗘𝗧𝗡𝗛𝗔 𝗖𝗛𝗢𝗗𝗔 𝗕𝗘𝗛𝗘𝗡 𝗞𝗘 𝗟𝗢𝗗𝗘 𝗧𝗘𝗥𝗜 𝗚𝗙 𝗧𝗢 𝗠𝗘𝗥𝗜 𝗥𝗔𝗡𝗗𝗜 𝗕𝗔𝗡𝗚𝗔𝗬𝗜 𝗔𝗕𝗕 𝗖𝗛𝗔𝗟 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗𝗧𝗔 𝗙𝗜𝗥𝗦𝗘 ♥️💦😆",
+    "{target} 𝗧𝗘𝗥𝗘 𝗕𝗘𝗛𝗘𝗡 𝗞 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗞𝗨 𝗗𝗔𝗔𝗟 𝗞𝗔𝗥 𝗖𝗛𝗨𝗧 𝗞𝗔 𝗞𝗛𝗢𝗢𝗡 𝗞𝗔𝗥 𝗗𝗨𝗚𝗔",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗛𝗔𝗔𝗧 𝗗𝗔𝗔𝗟𝗟𝗞𝗞𝗘 𝗕𝗛𝗔𝗔𝗚 𝗝𝗔𝗔𝗡𝗨𝗡𝗚𝗔",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗜𝗧𝗡𝗔 𝗖𝗛𝗢𝗗𝗨𝗨𝗡𝗚𝗔 𝗞𝗜 𝗦𝗔𝗣𝗡𝗘 𝗠𝗘𝗜 𝗕𝗛𝗜 𝗠𝗘𝗥𝗜 𝗖𝗛𝗨𝗗𝗔𝗜 𝗬𝗔𝗔𝗗𝗘 𝗞𝗔𝗥𝗘𝗚𝗜 𝗥Æ𝗡𝗗𝗜 🥳😍👊💥",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗜 𝗖𝗛𝗨𝗨𝗧 𝗠𝗘 𝗦𝗖𝗢𝗢𝗧𝗘𝗥 𝗗𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 👅",
+    "{target} 𝗧𝗘𝗥Ａ 𝗕𝗔𝗔𝗣 𝗛𝗨 𝗕𝗛𝗢𝗦𝗗𝗜𝗞𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗥𝗔𝗡𝗗𝗜 𝗞𝗛𝗔𝗡𝗘 𝗣𝗘 𝗖𝗛𝗨𝗗𝗪𝗔 𝗞𝗘 𝗨𝗦 𝗣𝗔𝗜𝗦𝗘 𝗞𝗜 𝗗𝗔𝗔𝗥𝗨 𝗣𝗘𝗘𝗧𝗔 𝗛𝗨 🍷🤩🔥",
+    "{target} 𝗧𝗨 𝗔𝗨𝗥 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗗𝗢𝗡𝗢 𝗞𝗜 𝗕𝗛𝗢𝗦𝗗𝗘 𝗠𝗘𝗜 𝗠𝗘𝗧𝗥𝗢 𝗖𝗛𝗔𝗟𝗪𝗔 𝗗𝗨𝗡𝗚𝗔 𝗠𝗔𝗗𝗔𝗥𝗫𝗛𝗢𝗗 🚇🤩😱🥶",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗕𝗔𝗥𝗚𝗔𝗗 𝗞𝗔 𝗣𝗘𝗗 𝗨𝗚𝗔 𝗗𝗨𝗡𝗚𝗔𝗔 𝗖𝗢𝗥𝗢𝗡𝗔 𝗠𝗘𝗜 𝗦𝗔𝗕 𝗢𝗫𝗬𝗚𝗘𝗡 𝗟𝗘𝗞𝗮𝗿 𝗝𝗔𝗬𝗘𝗡𝗚𝗘 🤢🤩🥳",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗦𝗨𝗧𝗟𝗜 𝗕𝗢𝗠𝗕 𝗙𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗝𝗛𝗔𝗔𝗧𝗘 𝗝𝗔𝗟 𝗞𝗘 𝗞𝗛𝗔𝗔𝗸 𝗛𝗢 𝗝𝗔𝗬𝗘𝗚𝗜 💣",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗞𝗛𝗨𝗟𝗘 𝗕𝗔𝗝𝗔𝗥 𝗠𝗘 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 🤣🤣💋",
+    "{target} 𝗛𝗔𝗛𝗔𝗛𝗔𝗛𝗔 𝗕𝗔𝗖𝗛𝗛𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗 𝗗𝗜𝗔 𝗡𝗔𝗡𝗚𝗔 𝗞𝗔𝗥𝗞𝗞𝗘",
+    "{target} 𝗔𝗣𝗡𝗜 𝗔𝗠𝗠𝗔 𝗦𝗘 𝗣𝗨𝗖𝗛𝗡𝗔 𝗨𝗦𝗞𝗢 𝗨𝗦 𝗞𝗔𝗔𝗟𝗜 𝗥𝗔𝗔𝗧 𝗠𝗘𝗜 𝗞𝗔𝗨𝗡 𝗖𝗛𝗢𝗗𝗡𝗘𝗘 𝗔𝗬𝗔 𝗧𝗛𝗔𝗔𝗔! 𝗧𝗘𝗥𝗘 𝗜𝗦 𝗣𝗔𝗣𝗔 𝗞𝗔 𝗡𝗔𝗔𝗠 𝗟𝗘𝗚𝗜 😂👿😳",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗛𝗡 𝗦𝗕𝗦𝗘 𝗕𝗗𝗜 𝗥𝗔𝗡𝗗𝗜.",
+
+    # 3. PURE DESI LIST (BINA MACHINE WALI)
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗕𝗜𝗦𝗧𝗔𝗥 𝗣𝗘 𝗕𝗔𝗔𝗡𝗗𝗛 𝗞𝗘 𝗣𝗘𝗟𝗨𝗡𝗚𝗔 𝗥𝗔𝗔𝗧 𝗕𝗛𝗔𝗥 🔥",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗟𝗨𝗡𝗗 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗧𝗔𝗡𝗗𝗔𝗩 𝗞𝗔𝗥𝗨𝗡𝗚𝗔 😈",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗙𝗔𝗔𝗗 𝗞𝗘 𝗛𝗔𝗪𝗔𝗜 𝗔𝗗𝗗𝗔 𝗕𝗔𝗡𝗔 𝗗𝗨𝗡𝗚𝗔 ✈️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗥𝗔𝗡𝗗𝗜 𝗚𝗙 𝗞𝗢 𝗡𝗔𝗡𝗚𝗔 𝗡𝗔𝗖𝗛𝗔𝗨𝗡𝗚𝗔 𝗦𝗔𝗗𝗔𝗞 𝗣𝗘 💃",
+    "{target} 𝗦𝗔𝗔𝗟𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗚𝗛𝗢𝗗𝗜 𝗕𝗔𝗡𝗔 𝗞𝗘 𝗧𝗔𝗕𝗘𝗟𝗘 𝗠𝗘𝗜 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🐎",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗦𝗘𝗔𝗟 𝗧𝗢𝗗 𝗞𝗘 𝗨𝗦𝗞𝗢 𝗥𝗔𝗡𝗗𝗜 𝗚𝗛𝗢𝗦𝗜𝗧 𝗞𝗔𝗥𝗨𝗡𝗚𝗔 🩸",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗜𝗧𝗡𝗔 𝗩𝗜𝗥𝗬𝗔 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 𝗞𝗜 𝗕𝗔𝗛𝗔𝗥 𝗔𝗔 𝗝𝗔𝗬𝗘 💦",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗠𝗘𝗥𝗘 𝗟𝗨𝗡𝗗 𝗞𝗜 𝗔𝗔𝗗𝗔𝗧 𝗟𝗔𝗚 𝗚𝗔𝗬𝗜 𝗛𝗔𝗜 🍆",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗖𝗛𝗢𝗗 𝗖𝗛𝗢𝗗 𝗞𝗘 𝗨𝗦𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗟𝗔𝗔𝗟 𝗞𝗔𝗥 𝗗𝗨𝗡𝗗𝗔 🔴",
+    "{target} 𝗔𝗕𝗘 𝗥𝗔𝗡𝗗𝗜 𝗞𝗘 𝗣𝗜𝗟𝗟𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗞𝗢𝗧𝗛𝗘 𝗣𝗘 𝗕𝗜𝗧𝗛𝗔 𝗔𝗔𝗬𝗔 𝗛𝗨 🏚️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗔𝗔𝗥 𝗞𝗘 𝗨𝗦𝗞𝗢 𝗖𝗛𝗔𝗟𝗡𝗘 𝗟𝗔𝗬𝗔𝗞 𝗡𝗔𝗛𝗜 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 ♿",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗘 𝗠𝗨𝗛 𝗠𝗘𝗜 𝗟𝗨𝗡𝗗 𝗗𝗘𝗞𝗘 𝗨𝗦𝗞𝗜 𝗔𝗪𝗔𝗔𝗭 𝗕𝗔𝗡𝗗 𝗞𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 🙊",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗣𝗔𝗧𝗔𝗞 𝗣𝗔𝗧𝗔𝗸 𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🤼‍♂️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗘𝗥𝗔 𝗟𝗔𝗪𝗗𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 𝗧𝗢 𝗖𝗛𝗜𝗟𝗟𝗔𝗬𝗘𝗚𝗜 😱",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗗𝗔𝗡𝗗𝗔 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗠𝗢𝗥 𝗕𝗔𝗡𝗔 𝗗𝗨𝗡𝗚𝗔 🦚",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝟭𝟬 𝗟𝗢𝗚𝗢𝗡 𝗦𝗘 𝗘𝗞 𝗦𝗔𝗔𝗧𝗛 𝗖𝗛𝗨𝗗𝗪𝗔𝗨𝗡𝗚𝗔 🔟",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗚𝗔𝗔𝗗𝗜 𝗠𝗘𝗜 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗨𝗡𝗦𝗔𝗔𝗡 𝗝𝗔𝗚𝗔𝗛 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗣𝗘𝗟𝗨𝗡𝗚𝗔 🚗",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗜𝗧𝗡𝗔 𝗖𝗛𝗢𝗗𝗔 𝗛𝗔𝗜 𝗞𝗜 𝗚𝗨𝗙𝗔 𝗟𝗔𝗚𝗧𝗔 𝗛𝗔𝗜 🕳️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗘 𝗦𝗧𝗔𝗡 𝗞𝗔𝗔𝗧 𝗞𝗘 𝗞𝗨𝗧𝗧𝗢𝗡 𝗞𝗢 𝗞𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🐕",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗡𝗔𝗡𝗚𝗔 𝗞𝗔𝗥𝗞𝗞𝗘 𝗣𝗢𝗢𝗥𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 🛍️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗜𝗥𝗖𝗛𝗜 𝗕𝗛𝗔𝗥 𝗞𝗘 𝗡𝗔𝗖𝗛𝗔𝗨𝗡𝗚𝗔 🌶️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗘 𝗦𝗔𝗔𝗧𝗛 𝗦𝗨𝗛𝗔𝗔𝗚𝗥𝗔𝗔𝗧 𝗠𝗔𝗡𝗔𝗨𝗡𝗚𝗔 🛌",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗠𝗘𝗥𝗘 𝗟𝗨𝗡𝗗 𝗣𝗘 𝗝𝗛𝗨𝗟𝗔 𝗝𝗛𝗨𝗟𝗔𝗔𝗨𝗡𝗚𝗔 🎢",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗛𝗔𝗧𝗛𝗢𝗗𝗔 𝗠𝗔𝗔𝗥 𝗞𝗘 𝗣𝗔𝗔𝗡𝗜 𝗡𝗜𝗞𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 🔨",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗕𝗔𝗔𝗟𝗢𝗡 𝗦𝗘 𝗣𝗔𝗞𝗔𝗗 𝗞𝗘 𝗚𝗛𝗔𝗦𝗘𝗘𝗧 𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 💇‍♀️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗔 𝗕𝗛𝗔𝗥𝗧𝗔 𝗕𝗔𝗡𝗔 𝗗𝗨𝗡𝗚𝗔 🍆",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗝𝗔𝗡𝗚𝗔𝗟 𝗠𝗘𝗜 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗝𝗔𝗔𝗡𝗪𝗔𝗥𝗢𝗡 𝗦𝗘 𝗖𝗛𝗨𝗗𝗪𝗔𝗨𝗡𝗚𝗔 🐅",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗦𝗜𝗟 𝗗𝗨𝗡𝗚𝗔 𝗦𝗨𝗜 𝗗𝗛𝗔𝗔𝗚𝗘 𝗦𝗘 🧵",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗘𝗘𝗡𝗧 𝗗𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 🧱",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗞𝗛𝗔𝗗𝗔 𝗞𝗔𝗥𝗞𝗞𝗘 𝗣𝗘𝗟𝗨𝗡𝗚𝗔 𝗗𝗜𝗪𝗔𝗔𝗥 𝗞𝗘 𝗦𝗔𝗛𝗔𝗥𝗘 🧱",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗕𝗔𝗟𝗟𝗔 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗜𝗫 𝗠𝗔𝗔𝗥𝗨𝗡𝗚𝗔 🏏",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗖𝗛𝗔𝗟𝗧𝗜 𝗧𝗥𝗔𝗜𝗡 𝗠𝗘𝗜 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🚂",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗨𝗟𝗧𝗔 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗨𝗦𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗨𝗛 𝗗𝗔𝗔𝗟𝗨𝗡𝗚𝗔 👅",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗕𝗔𝗔𝗡𝗦 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗠𝗢𝗥 𝗕𝗔𝗡𝗔𝗨𝗡𝗚𝗔 🎍",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗣𝗔𝗜𝗦𝗘 𝗗𝗘𝗞𝗞𝗞𝗘 𝗥𝗔𝗡𝗗𝗜 𝗕𝗔𝗡𝗔 𝗗𝗜𝗬𝗔 💵",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗞𝗜𝗖𝗛𝗔𝗗 𝗠𝗘𝗜 𝗣𝗔𝗧𝗔𝗞 𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 💩",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗦𝗔𝗔𝗠𝗣 𝗖𝗛𝗢𝗗 𝗗𝗨𝗡𝗚𝗔 🐍",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗥𝗘𝗣 𝗞𝗔𝗥𝗨𝗡𝗚𝗔 𝗣𝗢𝗟𝗜𝗖𝗘 𝗦𝗧𝗔𝗧𝗜𝗢𝗡 𝗞𝗘 𝗦𝗔𝗔𝗠𝗡𝗘 👮",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗦𝗛𝗔𝗥𝗔𝗔𝗕 𝗣𝗜𝗟𝗔 𝗞𝗘 𝗕𝗘𝗛𝗢𝗦𝗦 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🍷",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗚𝗢𝗟𝗜 𝗠𝗔𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 🔫",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗡𝗔𝗡𝗚𝗔 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔𝗨𝗡𝗚𝗔 📹",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗖𝗛𝗘𝗘𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗟𝗔𝗗𝗘 𝗦𝗘 🔪",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗞𝗛𝗘𝗧 𝗠𝗘𝗜 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗚𝗛𝗔𝗔𝗦 𝗣𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🌾",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗨𝗞𝗞𝗞𝗞𝗔 𝗠𝗔𝗔𝗥 𝗞𝗘 𝗕𝗔𝗖𝗛𝗛𝗘 𝗗𝗔𝗔𝗡𝗜 𝗕𝗔𝗛𝗔𝗥 𝗡𝗜𝗞𝗔𝗔𝗟 𝗟𝗨𝗡𝗚𝗔 👊",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗢𝗠𝗕𝗔𝗧𝗧𝗜 𝗝𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🕯️",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗣𝗔𝗔𝗡𝗜 𝗞𝗜 𝗧𝗔𝗡𝗞𝗜 𝗠𝗘𝗜 𝗗𝗨𝗕𝗢 𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 💧",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗦𝗜𝗟 𝗗𝗨𝗡𝗚𝗔 𝗙𝗘𝗩𝗜𝗤𝗨𝗜𝗖𝗞 𝗦𝗘 🧪",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗢 𝗞𝗨𝗧𝗧𝗢𝗡 𝗦𝗘 𝗡𝗢𝗖𝗛𝗪𝗔𝗨𝗡𝗚𝗔 🐕",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗕𝗛𝗔𝗥𝗜 𝗦𝗔𝗕𝗛𝗔 𝗠𝗘𝗜 𝗕𝗘𝗜𝗭𝗭𝗔𝗧 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🤬",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗞𝗔𝗔𝗟𝗔 𝗣𝗔𝗗 𝗚𝗔𝗬𝗔 𝗛𝗔𝗜 𝗖𝗛𝗨𝗗 𝗖𝗛𝗨𝗗 𝗞𝗘 ⚫",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗝𝗛𝗔𝗔𝗗𝗨 𝗗𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 🧹",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗖𝗛𝗔𝗧 𝗦𝗘 𝗡𝗘𝗘𝗖𝗛𝗘 𝗣𝗛𝗘𝗞 𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🏢",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗣𝗔𝗧𝗧𝗛𝗔𝗥 𝗕𝗛𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 🪨"
 ]
 
 # ==================== HELPER FUNCTIONS ====================
@@ -775,7 +889,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 START COMMAND CONFIG 🟢
+# 🟢 UPDATE: 100% PERFECT CLONE (NO EXTRA BUTTONS) 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -789,23 +903,21 @@ async def save_start_with_media(client, message):
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
+        # Html use karne se Quote, Bold aur Emojis sab same rahenge
+        START_DATA["text"] = reply.caption.html if reply.caption else None
+        await message.reply_text("🖼️ Photo, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
+        START_DATA["text"] = reply.caption.html if reply.caption else None
+        await message.reply_text("🎥 Video, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
-        START_DATA["text"] = reply.text
-        START_DATA["entities"] = reply.entities
-        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
+        START_DATA["text"] = reply.text.html
+        await message.reply_text("📝 Text, Quotes aur Premium Emojis 100% exactly save ho gaye!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -819,25 +931,24 @@ async def start_cmd(client, message):
     global START_DATA
 
     try:
-        # NO INLINE BUTTONS INCLUDED
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         else:
