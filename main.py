@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 # --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
 try:
@@ -66,11 +67,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (BOT'S OWN QUOTE SUPPORT) ---
+# --- NEW START MESSAGE STORAGE (RAW ENTITY SUPPORT) ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
-    "text": None         
+    "text": None,
+    "entities": None     
 }
 
 # --- SHORT SPAM LIST ---
@@ -774,7 +776,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 UPDATE: PROPER HTML PARSING TO KEEP BOT QUOTES SAME AS YOURS 🟢
+# 🟢 ULTIMATE FIX: RAW ENTITY COPYING (NO HTML PARSING BREAKS) 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -785,24 +787,33 @@ async def save_start_with_media(client, message):
     
     reply = message.reply_to_message
     
+    def process_raw_text(text):
+        if not text: return None
+        # Gourisen (8 letters) ki jagah "ANYSNAP " (saath me ek space, total 8 letters)
+        # Is hack se aapka Quote aur Premium Emojis bilkul nahi tutenge!
+        text = re.sub(r'(?i)Gourisen', 'ANYSNAP ', text)
+        return text
+
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
-        # reply.caption.html se blockquotes <blockquote> tag me save ho jayenge
-        START_DATA["text"] = reply.caption.html if reply.caption else None
-        await message.reply_text("🖼️ Photo aur bot ka default quote formatting save ho gaya!")
+        START_DATA["text"] = process_raw_text(reply.caption)
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🖼️ Photo, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = reply.caption.html if reply.caption else None
-        await message.reply_text("🎥 Video aur bot ka default quote formatting save ho gaya!")
+        START_DATA["text"] = process_raw_text(reply.caption)
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🎥 Video, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
-        START_DATA["text"] = reply.text.html
-        await message.reply_text("📝 Text aur bot ka default quote formatting save ho gaya!")
+        START_DATA["text"] = process_raw_text(reply.text)
+        START_DATA["entities"] = reply.entities
+        await message.reply_text("📝 Text, Quotes aur Premium Emojis 100% exactly save ho gaye!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -816,25 +827,25 @@ async def start_cmd(client, message):
     global START_DATA
 
     try:
-        # Jab parse_mode HTML use hota hai, toh <blockquote> tag bot ke apne default blockquote design me convert ho jate hain
+        # RAW ENTITIES (NO PARSE_MODE) SO QUOTES RENDER EXACTLY AS YOU TYPED
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                parse_mode=ParseMode.HTML
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                parse_mode=ParseMode.HTML
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                parse_mode=ParseMode.HTML
+                entities=START_DATA["entities"]
             )
             
         else:
