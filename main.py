@@ -1,5 +1,4 @@
 import asyncio
-import re
 
 # --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
 try:
@@ -67,7 +66,7 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (RAW ENTITY SUPPORT) ---
+# --- YOUR PERFECT START MESSAGE STORAGE ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
@@ -776,7 +775,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 ULTIMATE FIX: RAW ENTITY COPYING (NO HTML PARSING BREAKS) 🟢
+# 🟢 PERFECT START MESSAGE SAVER (NO HTML, PURE ENTITIES) 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -787,31 +786,24 @@ async def save_start_with_media(client, message):
     
     reply = message.reply_to_message
     
-    def process_raw_text(text):
-        if not text: return None
-        # Gourisen (8 letters) ki jagah "ANYSNAP " (saath me ek space, total 8 letters)
-        # Is hack se aapka Quote aur Premium Emojis bilkul nahi tutenge!
-        text = re.sub(r'(?i)Gourisen', 'ANYSNAP ', text)
-        return text
-
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
-        START_DATA["text"] = process_raw_text(reply.caption)
+        START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
         await message.reply_text("🖼️ Photo, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = process_raw_text(reply.caption)
+        START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
         await message.reply_text("🎥 Video, Quotes aur Premium Emojis 100% exactly save ho gaye!")
 
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
-        START_DATA["text"] = process_raw_text(reply.text)
+        START_DATA["text"] = reply.text
         START_DATA["entities"] = reply.entities
         await message.reply_text("📝 Text, Quotes aur Premium Emojis 100% exactly save ho gaye!")
         
@@ -827,7 +819,6 @@ async def start_cmd(client, message):
     global START_DATA
 
     try:
-        # RAW ENTITIES (NO PARSE_MODE) SO QUOTES RENDER EXACTLY AS YOU TYPED
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
@@ -850,25 +841,25 @@ async def start_cmd(client, message):
             
         else:
             text = """
-🔥 <b>WELCOME TO MAGMA USERBOT MANAGER</b> 🔥
+🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
 
-<b>I can help you run the powerful Magma Userbot on your Telegram account.</b>
+**I can help you run the powerful Magma Userbot on your Telegram account.**
 
-✨ <b>HOW TO START:</b>
+✨ **HOW TO START:**
 
-1️⃣ <b>Get Session:</b>
-   Go to @Stingxsessionbot and generate a <b>Pyrogram</b> String Session.
+1️⃣ **Get Session:**
+   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
 
-2️⃣ <b>Connect:</b>
+2️⃣ **Connect:**
    Send the session here using the add command:
-   <code>/add &lt;your_string_session&gt;</code>
+   `/add <your_string_session>`
 
-3️⃣ <b>Enjoy:</b>
-   Once connected, type <code>.help</code> in your Saved Messages to see commands!
+3️⃣ **Enjoy:**
+   Once connected, type `.help` in your Saved Messages to see commands!
 
-⚠️ <b>Note:</b> Keep your session safe!
+⚠️ **Note:** Keep your session safe!
 """
-            await message.reply(text, parse_mode=ParseMode.HTML)
+            await message.reply(text, parse_mode=ParseMode.MARKDOWN)
             
     except Exception as e:
         print(f"Start Error: {e}")
