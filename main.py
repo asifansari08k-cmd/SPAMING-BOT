@@ -61,7 +61,7 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# Bot ka dimaag jisme sab save hoga
+# Bot ka dimaag jisme sab save hoga (DYNAMIC START DATA)
 START_DATA = {
     "type": "text",      # Ye batayega ki photo hai, video hai ya text
     "file_id": None,     # Media ka unique code
@@ -753,6 +753,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
+# ------ ADDSTART HANDLER (DYNAMIC START SETUP) ------
 @bot.on_message(filters.command("addstart"))
 async def save_start_with_media(client, message):
     global START_DATA
@@ -791,8 +792,10 @@ async def save_start_with_media(client, message):
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
 
 
+# ------ START COMMAND HANDLER ------
 @bot.on_message(filters.command("start"))
 async def start_cmd(client, message):
+    
     # Ab check karte hain bot ke dimaag mein kya save hai
     try:
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
