@@ -61,12 +61,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (PREMIUM EMOJI FIX) ---
+# --- START MESSAGE STORAGE ---
 START_DATA = {
-    "type": "text",      
-    "file_id": None,     
-    "text": None,        
-    "entities": None     
+    "type": "text",      # Ye batayega ki photo hai, video hai ya text
+    "file_id": None,     # Media ka unique code
+    "text": None,        # Aapka message ya caption
+    "entities": None     # Aapke Premium Emojis
 }
 
 # --- SHORT SPAM LIST ---
@@ -749,6 +749,8 @@ async def ad_filter_func(_, __, message):
 ad_filter = filters.create(ad_filter_func)
 
 
+# --- NAYA START AUR ADDSTART LOGIC (JAISE TUMNE BHEJA THA) ---
+
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -759,7 +761,6 @@ async def save_start_with_media(client, message):
     
     reply = message.reply_to_message
     
-    # Agar Photo hai
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
@@ -767,7 +768,6 @@ async def save_start_with_media(client, message):
         START_DATA["entities"] = reply.caption_entities
         await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
 
-    # Agar Video hai
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
@@ -775,7 +775,6 @@ async def save_start_with_media(client, message):
         START_DATA["entities"] = reply.caption_entities
         await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
 
-    # Agar sirf Text hai
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
@@ -790,7 +789,8 @@ async def save_start_with_media(client, message):
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
     global START_DATA
-
+    
+    # Buttons setup 
     buttons = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
@@ -845,7 +845,6 @@ async def start_cmd(client, message):
             await message.reply_text(text, reply_markup=buttons)
             
     except Exception as e:
-        print(f"Start Error: {e}")
         await message.reply_text(f"Error aagaya bhai: {e}")
 
 
