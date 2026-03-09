@@ -1,12 +1,12 @@
 import asyncio
 
-# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ (NO MORE RUNTIME ERROR) ---
+# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
 try:
     loop = asyncio.get_running_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-# -----------------------------------------------------------------------
+# -----------------------------------------------
 
 import random
 import os
@@ -66,12 +66,11 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (EXACT ENTITY SUPPORT FOR QUOTES) ---
+# --- NEW START MESSAGE STORAGE (BOT'S OWN QUOTE SUPPORT) ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
-    "text": None,
-    "entities": None # WAPAS ADD KIYA TAALI QUOTES/PREMIUM EMOJIS SAME RAHEIN
+    "text": None         
 }
 
 # --- SHORT SPAM LIST ---
@@ -356,7 +355,7 @@ async def love_handler(client, message):
 async def yourmom_handler(client, message):
     await smart_edit(message, "🤱 **Searching for Mom...**")
     await smart_edit(message, "🫦 **Target Locked!**")
-    header = "🤱 Gourisen OSINT USER'S VS YOUR MOM 💋"
+    header = "🤱 ANYSNAP USER'S VS YOUR MOM 💋"
     footer = "TERI MAA MERI LUND PE 🥵💋"
     await draw_art(message, YOURMOM_ART, header=header, footer=footer)
 
@@ -667,7 +666,7 @@ async def end_cmd(client, message):
         return
 
     try:
-        await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
+        await client.set_chat_title(chat_id, "FUCK BY ANYSNAP USER")
     except Exception:
         pass
 
@@ -775,7 +774,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 FIX: 100% RAW ENTITY COPYING (NO HTML PARSING BREAKS) 🟢
+# 🟢 UPDATE: PROPER HTML PARSING TO KEEP BOT QUOTES SAME AS YOURS 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -789,23 +788,21 @@ async def save_start_with_media(client, message):
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🖼️ Photo, Quotes aur Premium Emojis 100% exactly save ho gaye!")
+        # reply.caption.html se blockquotes <blockquote> tag me save ho jayenge
+        START_DATA["text"] = reply.caption.html if reply.caption else None
+        await message.reply_text("🖼️ Photo aur bot ka default quote formatting save ho gaya!")
 
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🎥 Video, Quotes aur Premium Emojis 100% exactly save ho gaye!")
+        START_DATA["text"] = reply.caption.html if reply.caption else None
+        await message.reply_text("🎥 Video aur bot ka default quote formatting save ho gaya!")
 
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
-        START_DATA["text"] = reply.text
-        START_DATA["entities"] = reply.entities
-        await message.reply_text("📝 Text, Quotes aur Premium Emojis 100% exactly save ho gaye!")
+        START_DATA["text"] = reply.text.html
+        await message.reply_text("📝 Text aur bot ka default quote formatting save ho gaya!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -819,45 +816,46 @@ async def start_cmd(client, message):
     global START_DATA
 
     try:
+        # Jab parse_mode HTML use hota hai, toh <blockquote> tag bot ke apne default blockquote design me convert ho jate hain
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"]
+                parse_mode=ParseMode.HTML
             )
             
         else:
             text = """
-🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
+🔥 <b>WELCOME TO MAGMA USERBOT MANAGER</b> 🔥
 
-**I can help you run the powerful Magma Userbot on your Telegram account.**
+<b>I can help you run the powerful Magma Userbot on your Telegram account.</b>
 
-✨ **HOW TO START:**
+✨ <b>HOW TO START:</b>
 
-1️⃣ **Get Session:**
-   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
+1️⃣ <b>Get Session:</b>
+   Go to @Stingxsessionbot and generate a <b>Pyrogram</b> String Session.
 
-2️⃣ **Connect:**
+2️⃣ <b>Connect:</b>
    Send the session here using the add command:
-   `/add <your_string_session>`
+   <code>/add &lt;your_string_session&gt;</code>
 
-3️⃣ **Enjoy:**
-   Once connected, type `.help` in your Saved Messages to see commands!
+3️⃣ <b>Enjoy:</b>
+   Once connected, type <code>.help</code> in your Saved Messages to see commands!
 
-⚠️ **Note:** Keep your session safe!
+⚠️ <b>Note:</b> Keep your session safe!
 """
             await message.reply(text, parse_mode=ParseMode.HTML)
             
