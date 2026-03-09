@@ -1,12 +1,12 @@
 import asyncio
 
-# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ ---
+# --- ASYNCIO EVENT LOOP FIX FOR PYTHON 3.14+ (NO MORE RUNTIME ERROR) ---
 try:
     loop = asyncio.get_running_loop()
 except RuntimeError:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-# -----------------------------------------------
+# -----------------------------------------------------------------------
 
 import random
 import os
@@ -43,11 +43,6 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
-# ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = -1003892920891  
-FORCE_CHANNEL_LINK = "https://t.me/+Om1HMs2QTHk1N2Zh" 
-FORCE_GROUP = "Anysnapsupport"
-
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -66,6 +61,14 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
+# Bot ka dimaag jisme sab save hoga
+START_DATA = {
+    "type": "text",      # Ye batayega ki photo hai, video hai ya text
+    "file_id": None,     # Media ka unique code
+    "text": None,        # Aapka message ya caption
+    "entities": None     # Aapke Premium Emojis
+}
+
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
@@ -75,28 +78,6 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
-
-async def check_force_subscribe(client, message):
-    user_id = message.from_user.id
-    try:
-        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
-        await client.get_chat_member(FORCE_GROUP, user_id)
-        return True
-    except UserNotParticipant:
-        buttons = [
-            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
-            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
-        ]
-        await message.reply(
-            "**⛔ ACCESS DENIED!**\n\n"
-            "You must join our Channel and Group to use this bot.\n"
-            "Join then try again!",
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-        return False
-    except Exception as e:
-        print(f"FS Error: {e}")
-        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -286,8 +267,8 @@ async def help_handler(client, message):
 ❤️ `.love` - Magic Heart Animation
 ℹ️ `.info <reply>` - Get User Info
 🚀 `.spam <msg> <count>` - Custom Spam
-🚀 `.anysnap <username/id> <count>` - Abuse Spam
-🎯 `.aanysnap` - Global Auto-Reply
+🚀 `.gourisenosint <username/id> <count>` - Abuse Spam
+🎯 `.agourisenosint` - Global Auto-Reply
 👥 `.clone` - Copy ID
 🔄 `.back` - Restore ID
 📍 `.tagall <msg>` - Tag Everyone
@@ -348,7 +329,7 @@ async def love_handler(client, message):
 async def yourmom_handler(client, message):
     await smart_edit(message, "🤱 **Searching for Mom...**")
     await smart_edit(message, "🫦 **Target Locked!**")
-    header = "🤱 ANYSNAP USER'S VS YOUR MOM 💋"
+    header = "🤱 Gourisen OSINT USER'S VS YOUR MOM 💋"
     footer = "TERI MAA MERI LUND PE 🥵💋"
     await draw_art(message, YOURMOM_ART, header=header, footer=footer)
 
@@ -439,6 +420,7 @@ async def back_cmd(client, message):
     except Exception as e: res = await message.edit(f"❌ Error: {e}")
     asyncio.create_task(delete_res(res))
 
+# 🟢 CUSTOM MESSAGE SPAM COMMAND 🟢
 async def spam_cmd(client, message):
     global active_spams
     args = message.command
@@ -483,7 +465,7 @@ async def anysnap_cmd(client, message):
     args = message.command
     
     if len(args) < 2:
-        res = await message.edit("❌ Usage:\n`.anysnap <count>` (Reply)\n`.anysnap <username/id> <count>`")
+        res = await message.edit("❌ Usage:\n`.gourisenosint <count>` (Reply)\n`.gourisenosint <username/id> <count>`")
         return asyncio.create_task(delete_res(res))
 
     try:
@@ -492,7 +474,7 @@ async def anysnap_cmd(client, message):
             target = message.reply_to_message.from_user
         else:
             if len(args) < 3:
-                res = await message.edit("❌ Usage: `.anysnap <username/id> <count>`")
+                res = await message.edit("❌ Usage: `.gourisenosint <username/id> <count>`")
                 return asyncio.create_task(delete_res(res))
             target_input = args[1]
             count = int(args[2])
@@ -637,6 +619,7 @@ async def end_cmd(client, message):
     me = await client.get_me()
     banned_count = 0
     
+    # 1. EXTREME FAST MASS BAN
     try:
         async for member in client.get_chat_members(chat_id):
             if not active_bans.get(message.chat.id, True):
@@ -658,11 +641,13 @@ async def end_cmd(client, message):
     if not active_bans.get(message.chat.id, True):
         return
 
+    # 2. CHANGE TITLE
     try:
-        await client.set_chat_title(chat_id, "FUCK BY ANYSNAP USER")
+        await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
     except Exception:
         pass
 
+    # 3. FIND OWNER
     owner_mention = "Owner"
     try:
         async for admin in client.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS):
@@ -672,6 +657,7 @@ async def end_cmd(client, message):
     except Exception:
         pass
 
+    # 4. SEND MESSAGE AND PIN IT
     try:
         final_text = f"{owner_mention}\nME KYA LADLE MEAOOOUUUUUU\nGOP GOP GOP GOP GOP 🥳"
         sent_msg = await client.send_message(chat_id, final_text, parse_mode=ParseMode.HTML)
@@ -759,23 +745,15 @@ async def auto_reply_listener(client, message):
         try: await message.reply(msg, parse_mode=ParseMode.HTML)
         except: pass
 
+# ==================== MAIN BOT LOGIC ====================
+
 async def ad_filter_func(_, __, message):
     if not message.from_user:
         return False
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# ==================== MAIN BOT LOGIC (YOUR EXACT CODE) ====================
-
-# Bot ka dimaag jisme sab save hoga
-START_DATA = {
-    "type": "text",      # Ye batayega ki photo hai, video hai ya text
-    "file_id": None,     # Media ka unique code
-    "text": None,        # Aapka message ya caption
-    "entities": None     # Aapke Premium Emojis
-}
-
-@bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
+@bot.on_message(filters.command("addstart"))
 async def save_start_with_media(client, message):
     global START_DATA
     
@@ -813,57 +791,38 @@ async def save_start_with_media(client, message):
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
 
 
-@bot.on_message(filters.command("start") & filters.private)
+@bot.on_message(filters.command("start"))
 async def start_cmd(client, message):
-    if not await check_force_subscribe(client, message):
-        return
-    
-    # Niche ke buttons, ekdum clean aur Gourisen OSINT branding ke sath
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
-            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url="https://t.me/your_username_here")]
-        ]
-    )
-
     # Ab check karte hain bot ke dimaag mein kya save hai
     try:
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"], 
-                reply_markup=buttons
+                entities=START_DATA["entities"]
             )
             
         else:
-            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", reply_markup=buttons)
+            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨")
             
     except Exception as e:
         await message.reply_text(f"Error aagaya bhai: {e}")
 
-# ==================== ADD SESSION HANDLER ====================
-
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
-    if not await check_force_subscribe(client, message):
-        return
-
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
         return
@@ -897,8 +856,8 @@ async def add_session_handler(client, message):
         new_user.add_handler(MessageHandler(clone_cmd, filters.command("clone", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(back_cmd, filters.command("back", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(spam_cmd, filters.command("spam", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("anysnap", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("aanysnap", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("gourisenosint", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("agourisenosint", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(tagall_cmd, filters.command("tagall", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(allban_cmd, filters.command("allban", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(fastallban_cmd, filters.command("fastallban", prefixes=".") & filters.me))
