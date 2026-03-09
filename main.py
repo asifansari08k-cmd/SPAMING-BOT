@@ -62,12 +62,13 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (Fixed Quotes & Emojis) ---
+# ==================== AAPKA EXACT START MESSAGE LOGIC ====================
+# Bot ka dimaag jisme sab save hoga
 START_DATA = {
-    "type": "text",      
-    "file_id": None,     
-    "text": None,
-    "entities": None     
+    "type": "text",      # Ye batayega ki photo hai, video hai ya text
+    "file_id": None,     # Media ka unique code
+    "text": None,        # Aapka message ya caption
+    "entities": None     # Aapke Premium Emojis
 }
 
 # --- SHORT SPAM LIST ---
@@ -749,37 +750,40 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
+
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
     
     if not message.reply_to_message:
-        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!")
+        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke /addstart likho!")
         return
     
     reply = message.reply_to_message
     
-    # Ye logic Entities (Quote aur Premium Emojis) ko save karega
+    # Agar Photo hai
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
         START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🖼️ Photo aur Premium Emojis/Quotes dono save ho gaye!")
+        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
 
+    # Agar Video hai
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
         START_DATA["text"] = reply.caption
         START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🎥 Video aur Premium Emojis/Quotes dono save ho gaye!")
+        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
 
+    # Agar sirf Text hai
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
         START_DATA["text"] = reply.text
         START_DATA["entities"] = reply.entities
-        await message.reply_text("📝 Text aur Premium Emojis/Quotes save ho gaye!")
+        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -788,8 +792,8 @@ async def save_start_with_media(client, message):
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
     global START_DATA
-
-    # Ye rahe aapke poore 3-Line Buttons
+    
+    # Niche ke buttons, ekdum clean aur Gourisen OSINT branding ke sath
     buttons = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
@@ -801,13 +805,13 @@ async def start_cmd(client, message):
         ]
     )
 
+    # Ab check karte hain bot ke dimaag mein kya save hai
     try:
-        # Yahan se maine quote=True hata diya hai. Ab ye direct entities (Blockquote aur Emojis) ke sath message bhejega.
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"],
+                caption_entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
             
@@ -815,41 +819,21 @@ async def start_cmd(client, message):
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"],
+                caption_entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"],
+                entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
             
         else:
-            text = """
-🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
-
-**I can help you run the powerful Magma Userbot on your Telegram account.**
-
-✨ **HOW TO START:**
-
-1️⃣ **Get Session:**
-   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
-
-2️⃣ **Connect:**
-   Send the session here using the add command:
-   `/add <your_string_session>`
-
-3️⃣ **Enjoy:**
-   Once connected, type `.help` in your Saved Messages to see commands!
-
-⚠️ **Note:** Keep your session safe!
-"""
-            await message.reply_text(text, reply_markup=buttons)
+            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", reply_markup=buttons)
             
     except Exception as e:
-        print(f"Start Error: {e}")
         await message.reply_text(f"Error aagaya bhai: {e}")
 
 
