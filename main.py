@@ -68,10 +68,10 @@ ad_content = {}
 
 # --- NEW START MESSAGE STORAGE (PREMIUM EMOJI SUPPORT) ---
 START_DATA = {
-    "type": "text",      # Ye batayega ki photo hai, video hai ya text
-    "file_id": None,     # Media ka unique code
-    "text": None,        # Aapka message ya caption
-    "entities": None     # Aapke Premium Emojis
+    "type": "text",      
+    "file_id": None,     
+    "text": None,        
+    "entities": None     
 }
 
 # --- SHORT SPAM LIST ---
@@ -775,7 +775,7 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 UPDATE: EXCLUSIVE PREMIUM EMOJI/MEDIA ADDSTART 🟢
+# 🟢 START COMMAND CONFIG 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -817,36 +817,27 @@ async def start_cmd(client, message):
         return
 
     global START_DATA
-    
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
-            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url=f"tg://user?id={OWNER_ID}")]
-        ]
-    )
 
     try:
+        # NO INLINE BUTTONS INCLUDED
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"], 
-                reply_markup=buttons
+                caption_entities=START_DATA["entities"]
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                entities=START_DATA["entities"], 
-                reply_markup=buttons
+                entities=START_DATA["entities"]
             )
             
         else:
@@ -869,7 +860,7 @@ async def start_cmd(client, message):
 
 ⚠️ **Note:** Keep your session safe!
 """
-            await message.reply(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
+            await message.reply(text, parse_mode=ParseMode.HTML)
             
     except Exception as e:
         print(f"Start Error: {e}")
