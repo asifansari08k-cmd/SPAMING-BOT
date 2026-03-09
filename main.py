@@ -67,11 +67,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- NEW START MESSAGE STORAGE (HTML QUOTE SUPPORT) ---
+# --- NEW START MESSAGE STORAGE ---
 START_DATA = {
     "type": "text",      
     "file_id": None,     
-    "text": None         
+    "text": None,
+    "entities": None     
 }
 
 # --- SHORT SPAM LIST ---
@@ -775,7 +776,6 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# 🟢 ULTIMATE FIX: HTML PARSING WITH BLOCKQUOTE & REPLY QUOTE SUPPORT 🟢
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
@@ -786,38 +786,29 @@ async def save_start_with_media(client, message):
     
     reply = message.reply_to_message
     
-    # Custom HTML Generator to fix Blockquotes and replace text
-    def parse_to_html(text_obj):
-        if not text_obj: return None
-        # Use Pyrogram's HTML parser to keep Premium Emojis intact
-        html_text = text_obj.html
-        
-        # Agar user ne raw HTML type kiya hoga toh usko unescape kar lenge
-        html_text = html_text.replace("&lt;blockquote&gt;", "<blockquote>").replace("&lt;/blockquote&gt;", "</blockquote>")
-        html_text = html_text.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
-        html_text = html_text.replace("&lt;i&gt;", "<i>").replace("&lt;/i&gt;", "</i>")
-        
-        # Replace Gourisen with ANYSNAP safely inside the HTML text
-        html_text = re.sub(r'(?i)Gourisen', 'ANYSNAP', html_text)
-        return html_text
-
+    # Agar Photo hai
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
-        START_DATA["text"] = parse_to_html(reply.caption)
-        await message.reply_text("🖼️ Photo aur Quote formatting save ho gayi!")
+        START_DATA["text"] = reply.caption
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
 
+    # Agar Video hai
     elif reply.video:
         START_DATA["type"] = "video"
         START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = parse_to_html(reply.caption)
-        await message.reply_text("🎥 Video aur Quote formatting save ho gayi!")
+        START_DATA["text"] = reply.caption
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
 
+    # Agar sirf Text hai
     elif reply.text:
         START_DATA["type"] = "text"
         START_DATA["file_id"] = None
-        START_DATA["text"] = parse_to_html(reply.text)
-        await message.reply_text("📝 Text aur Quote formatting save ho gayi!")
+        START_DATA["text"] = reply.text
+        START_DATA["entities"] = reply.entities
+        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
         
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
@@ -830,13 +821,21 @@ async def start_cmd(client, message):
 
     global START_DATA
 
+    buttons = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
+            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url="https://t.me/your_username_here")]
+        ]
+    )
+
     try:
-        # PARSE_MODE.HTML for visual Blockquotes + QUOTE=TRUE for reply style
+        # Quote format ke sath exact same message wapas bhejega, emojis ke sath!
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                parse_mode=ParseMode.HTML,
+                caption_entities=START_DATA["entities"],
+                reply_markup=buttons,
                 quote=True
             )
             
@@ -844,38 +843,40 @@ async def start_cmd(client, message):
             await message.reply_video(
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"], 
-                parse_mode=ParseMode.HTML,
+                caption_entities=START_DATA["entities"],
+                reply_markup=buttons,
                 quote=True
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
-                parse_mode=ParseMode.HTML,
+                entities=START_DATA["entities"],
+                reply_markup=buttons,
                 quote=True
             )
             
         else:
             text = """
-🔥 <b>WELCOME TO MAGMA USERBOT MANAGER</b> 🔥
+🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
 
-<b>I can help you run the powerful Magma Userbot on your Telegram account.</b>
+**I can help you run the powerful Magma Userbot on your Telegram account.**
 
-✨ <b>HOW TO START:</b>
+✨ **HOW TO START:**
 
-1️⃣ <b>Get Session:</b>
-   Go to @Stingxsessionbot and generate a <b>Pyrogram</b> String Session.
+1️⃣ **Get Session:**
+   Go to @Stingxsessionbot and generate a **Pyrogram** String Session.
 
-2️⃣ <b>Connect:</b>
+2️⃣ **Connect:**
    Send the session here using the add command:
-   <code>/add &lt;your_string_session&gt;</code>
+   `/add <your_string_session>`
 
-3️⃣ <b>Enjoy:</b>
-   Once connected, type <code>.help</code> in your Saved Messages to see commands!
+3️⃣ **Enjoy:**
+   Once connected, type `.help` in your Saved Messages to see commands!
 
-⚠️ <b>Note:</b> Keep your session safe!
+⚠️ **Note:** Keep your session safe!
 """
-            await message.reply_text(text, parse_mode=ParseMode.HTML, quote=True)
+            await message.reply_text(text, reply_markup=buttons, quote=True)
             
     except Exception as e:
         print(f"Start Error: {e}")
