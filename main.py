@@ -753,14 +753,17 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# --- NEW: /addstart HANDLER MERGED & FIXED ---
+# --- NEW: /addstart HANDLER MERGED & FIXED (WITH QUOTE SUPPORT) ---
 @bot.on_message(filters.command("addstart"))
 async def save_start_with_media(client, message):
     global START_DATA
     
     try:
         if not message.reply_to_message:
-            await message.reply("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!", quote=True)
+            await message.reply_text(
+                "⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!", 
+                reply_to_message_id=message.id
+            )
             return
         
         reply = message.reply_to_message
@@ -771,7 +774,7 @@ async def save_start_with_media(client, message):
             START_DATA["file_id"] = reply.photo.file_id
             START_DATA["text"] = reply.caption or ""
             START_DATA["entities"] = reply.caption_entities
-            await message.reply("🖼️ Photo aur Premium Emojis dono save ho gaye!", quote=True)
+            await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!", reply_to_message_id=message.id)
 
         # Agar Video hai
         elif reply.video:
@@ -779,7 +782,7 @@ async def save_start_with_media(client, message):
             START_DATA["file_id"] = reply.video.file_id
             START_DATA["text"] = reply.caption or ""
             START_DATA["entities"] = reply.caption_entities
-            await message.reply("🎥 Video aur Premium Emojis dono save ho gaye!", quote=True)
+            await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!", reply_to_message_id=message.id)
 
         # Agar sirf Text hai
         elif reply.text:
@@ -787,15 +790,15 @@ async def save_start_with_media(client, message):
             START_DATA["file_id"] = None
             START_DATA["text"] = reply.text or ""
             START_DATA["entities"] = reply.entities
-            await message.reply("📝 Text aur Premium Emojis save ho gaye!", quote=True)
+            await message.reply_text("📝 Text aur Premium Emojis save ho gaye!", reply_to_message_id=message.id)
             
         else:
-            await message.reply("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.", quote=True)
+            await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.", reply_to_message_id=message.id)
             
     except Exception as e:
-        await message.reply(f"❌ Error aagaya bhai: {e}", quote=True)
+        await message.reply_text(f"❌ Error aagaya bhai: {e}", reply_to_message_id=message.id)
 
-# --- NEW: /start HANDLER MERGED & FIXED ---
+# --- NEW: /start HANDLER MERGED & FIXED (WITH QUOTE SUPPORT) ---
 @bot.on_message(filters.command("start"))
 async def start_cmd(client, message):
     try:
@@ -804,7 +807,7 @@ async def start_cmd(client, message):
                 photo=START_DATA["file_id"], 
                 caption=START_DATA["text"] or "", 
                 caption_entities=START_DATA["entities"],
-                quote=True
+                reply_to_message_id=message.id
             )
             
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
@@ -812,21 +815,21 @@ async def start_cmd(client, message):
                 video=START_DATA["file_id"], 
                 caption=START_DATA["text"] or "", 
                 caption_entities=START_DATA["entities"],
-                quote=True
+                reply_to_message_id=message.id
             )
             
         elif START_DATA["type"] == "text" and START_DATA["text"]:
-            await message.reply(
+            await message.reply_text(
                 text=START_DATA["text"], 
                 entities=START_DATA["entities"],
-                quote=True
+                reply_to_message_id=message.id
             )
             
         else:
-            await message.reply("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", quote=True)
+            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", reply_to_message_id=message.id)
             
     except Exception as e:
-        await message.reply(f"Error aagaya bhai: {e}", quote=True)
+        await message.reply_text(f"Error aagaya bhai: {e}", reply_to_message_id=message.id)
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
