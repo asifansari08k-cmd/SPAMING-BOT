@@ -45,7 +45,7 @@ OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
 # ✅ Apna Private Channel ID yahan daalo (bot us channel ka admin hona chahiye)
 # Channel ID format: -100xxxxxxxxxx
-STORAGE_CHANNEL_ID = -1002000000000  # 👈 YAHAN APNA CHANNEL ID DAALO
+STORAGE_CHANNEL_ID = -1003804939396  # 👈 YAHAN APNA CHANNEL ID DAALO
 
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
