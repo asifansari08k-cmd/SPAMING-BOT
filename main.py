@@ -43,14 +43,6 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
-# ✅ Apna Private Channel ID yahan daalo (bot us channel ka admin hona chahiye)
-# Channel ID format: -100xxxxxxxxxx
-STORAGE_CHANNEL_ID = -1003804939396  # 👈 YAHAN APNA STORAGE CHANNEL ID DAALO
-
-# ✅ Force Subscribe Channel ID yahan daalo (bot admin hona chahiye with invite link permission)
-FORCE_CHANNEL_ID = -1002000000001    # 👈 YAHAN APNA FORCE CHANNEL ID DAALO
-FORCE_CHANNEL_LINK = "https://t.me/yourchannel"  # 👈 YAHAN APNA CHANNEL LINK DAALO
-
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -69,13 +61,35 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- START MESSAGE STORAGE ---
-# Owner ke chat mein forward karke store karenge
-# copy_message se 100% formatting preserve hogi (blockquote bhi)
+# --- START MESSAGE STORAGE (NEW COPY METHOD) ---
 START_DATA = {
-    "chat_id": None,   # OWNER_ID hoga
-    "message_id": None # forwarded message ka ID
+    "https://t.me/c/3804939396/3": None  # Ye sirf message ki ID save karega
 }
+
+# ==================== DEFAULT START MESSAGE FORMATTING ====================
+DEFAULT_START_MESSAGE = """m A G m a
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+🤖 <b>Magma Bot</b>
+<blockquote>WELCOME TO MAGMA USERBOT MANAGER</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+<blockquote>💬 I can help you run the powerful
+Magma Userbot on your Telegram account</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+1️⃣ <b>HOW TO START</b>
+<blockquote>💬 Get Session
+🔗 Go to: @Stingxsessionbot
+Generate a Pyrogram String Session.</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+2️⃣ <b>Connect</b>
+<blockquote>🔥 Send the session here using command: <code>/add</code> sting session</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+3️⃣ <b>Enjoy</b>
+<blockquote>⚡ After connecting, go to Saved Messages. Type: .help to see all commands</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+⚠️ <b>NOTE</b>
+<blockquote>🛡️ Keep your String Session safe
+🔒 Never share it with anyone</blockquote>"""
+# ========================================================================
 
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
@@ -247,7 +261,7 @@ YOURMOM_ART = r"""
 """
 MYSON_ART = r"""
   ⠀     (\__/)
-      (•ㅅ•)      Don't talk to
+      (•ㅅ•)      Don’t talk to
    ＿ノヽ ノ＼＿      me or my son
 /　/ ⌒Ｙ⌒ Ｙ  ヽ     ever again.
 ( 　(三ヽ人　 /　  |
@@ -257,39 +271,6 @@ MYSON_ART = r"""
       /ﾐ`ー―彡\  (•ㅅ•)
      / ╰    ╯ \ /    \>
 """
-
-# ==================== FORCE SUBSCRIBE ====================
-
-async def force_check(client, message):
-    """Check karo user ne channel join kiya ya nahi"""
-    try:
-        member = await client.get_chat_member(FORCE_CHANNEL_ID, message.from_user.id)
-        # Agar banned ya left hai toh False return karo
-        if member.status.name in ["BANNED", "LEFT"]:
-            return False
-        return True
-    except UserNotParticipant:
-        return False
-    except Exception:
-        # Agar check fail hua toh allow karo (taaki bot band na ho)
-        return True
-
-async def send_force_msg(message):
-    """Force join message bhejo"""
-    from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-    await message.reply_text(
-        "🚫 **Access Denied!**
-
-"
-        "Bot use karne ke liye pehle humara channel join karo! 👇
-
-"
-        "Channel join karne ke baad dobara /start karo. ✅",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("✅ Join Channel", url=FORCE_CHANNEL_LINK)],
-            [InlineKeyboardButton("🔄 Try Again", callback_data="check_join")]
-        ])
-    )
 
 # ==================== USERBOT HANDLERS ====================
 
@@ -461,6 +442,7 @@ async def back_cmd(client, message):
     except Exception as e: res = await message.edit(f"❌ Error: {e}")
     asyncio.create_task(delete_res(res))
 
+# 🟢 CUSTOM MESSAGE SPAM COMMAND 🟢
 async def spam_cmd(client, message):
     global active_spams
     args = message.command
@@ -500,7 +482,7 @@ async def spam_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def anysnap_cmd(client, message):
+async def gourisenosint_cmd(client, message):
     global active_spams
     args = message.command
     
@@ -540,7 +522,7 @@ async def anysnap_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def aanysnap_cmd(client, message):
+async def agourisenosint_cmd(client, message):
     global auto_reply_users
     if not message.reply_to_message:
         res = await message.edit("❌ Reply to target!")
@@ -659,6 +641,7 @@ async def end_cmd(client, message):
     me = await client.get_me()
     banned_count = 0
     
+    # 1. EXTREME FAST MASS BAN
     try:
         async for member in client.get_chat_members(chat_id):
             if not active_bans.get(message.chat.id, True):
@@ -680,11 +663,13 @@ async def end_cmd(client, message):
     if not active_bans.get(message.chat.id, True):
         return
 
+    # 2. CHANGE TITLE
     try:
         await client.set_chat_title(chat_id, "FUCK BY Gourisen OSINT USER")
     except Exception:
         pass
 
+    # 3. FIND OWNER
     owner_mention = "Owner"
     try:
         async for admin in client.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS):
@@ -694,6 +679,7 @@ async def end_cmd(client, message):
     except Exception:
         pass
 
+    # 4. SEND MESSAGE AND PIN IT
     try:
         final_text = f"{owner_mention}\nME KYA LADLE MEAOOOUUUUUU\nGOP GOP GOP GOP GOP 🥳"
         sent_msg = await client.send_message(chat_id, final_text, parse_mode=ParseMode.HTML)
@@ -789,55 +775,55 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
-# ==================== START/ADDSTART COMMANDS (NEW FEATURE) ====================
-
-@bot.on_message(filters.command("addstart"))
+# --- NEW: /addstart HANDLER (FORWARD TO OWNER METHOD) ---
+@bot.on_message(filters.command("addstart") & filters.user(OWNER_ID))
 async def save_start_with_media(client, message):
     global START_DATA
     
-    if not message.reply_to_message:
-        await message.reply_text("⚠️ Pehle message bhejo, fir us par reply karke /addstart likho!")
-        return
-    
-    reply = message.reply_to_message
-
     try:
-        # Message ko Private Storage Channel mein forward karo
-        # Isse bot ko hamesha access rahega aur sab formatting (blockquote) preserve hogi
-        forwarded = await client.forward_messages(
-            chat_id=STORAGE_CHANNEL_ID,
-            from_chat_id=reply.chat.id,
-            message_ids=reply.id
+        if not message.reply_to_message:
+            await message.reply_text("⚠️ Bhai, pehle message par reply karke `/addstart` likho!", reply_to_message_id=message.id)
+            return
+        
+        # Bot replied message ko Owner (tumhari) private chat me copy karega
+        copied_msg = await client.copy_message(
+            chat_id=OWNER_ID,
+            from_chat_id=message.chat.id,
+            message_id=message.reply_to_message.id
         )
-        # Ab is forwarded message ka reference save karo
-        START_DATA["chat_id"] = STORAGE_CHANNEL_ID
-        START_DATA["message_id"] = forwarded.id
-
-        await message.reply_text("✅ **Start message save ho gaya!**\nQuote, Photo, Video — sab formatting same rahegi! 🎉")
-    except Exception as e:
-        await message.reply_text(f"❌ Error: {e}")
-
-
-@bot.on_message(filters.command("start") & filters.private)
-async def start_cmd_bot(client, message):
-    # Force Subscribe Check
-    if not await force_check(client, message):
-        await send_force_msg(message)
-        return
-    try:
-        if START_DATA["chat_id"] and START_DATA["message_id"]:
-            # Owner ke chat se copy karo — blockquote + sab formatting 100% same rahegi
-            await client.copy_message(
-                chat_id=message.chat.id,
-                from_chat_id=START_DATA["chat_id"],
-                message_id=START_DATA["message_id"]
-            )
-        else:
-            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨")
+        
+        # Message ID save kar lenge database (memory) me
+        START_DATA["msg_id"] = copied_msg.id
+        
+        await message.reply_text("✅ **Start message save ho gaya!**\n(Aur backup ke liye tumhare PM me bhej diya gaya hai. Premium emojis/quotes sab copy honge!)", reply_to_message_id=message.id)
             
     except Exception as e:
-        await message.reply_text(f"Error aagaya bhai: {e}")
+        await message.reply_text(f"❌ Error aagaya bhai: {e}\n\n*(Check karo ki tumne ({OWNER_ID}) bot ko PM me /start kiya hai ya nahi!)*", reply_to_message_id=message.id)
 
+# --- NEW: /start HANDLER (COPY FROM OWNER METHOD) ---
+@bot.on_message(filters.command("start"))
+async def start_cmd(client, message):
+    try:
+        # Agar tumne /addstart se koi message set kiya hai
+        if START_DATA.get("msg_id"):
+            await client.copy_message(
+                chat_id=message.chat.id,
+                from_chat_id=OWNER_ID,  # Tumhare PM se uthayega
+                message_id=START_DATA["msg_id"],
+                reply_to_message_id=message.id
+            )
+            
+        # Agar koi message set nahi hai, toh default text jayega
+        else:
+            await message.reply_text(
+                DEFAULT_START_MESSAGE,
+                parse_mode=ParseMode.HTML,
+                reply_to_message_id=message.id,
+                disable_web_page_preview=True
+            )
+            
+    except Exception as e:
+        await message.reply_text(f"Error aagaya bhai: {e}", reply_to_message_id=message.id)
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
@@ -874,8 +860,8 @@ async def add_session_handler(client, message):
         new_user.add_handler(MessageHandler(clone_cmd, filters.command("clone", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(back_cmd, filters.command("back", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(spam_cmd, filters.command("spam", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("gourisenosint", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("agourisenosint", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(gourisenosint_cmd, filters.command("gourisenosint", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(agourisenosint_cmd, filters.command("agourisenosint", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(tagall_cmd, filters.command("tagall", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(allban_cmd, filters.command("allban", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(fastallban_cmd, filters.command("fastallban", prefixes=".") & filters.me))
@@ -883,6 +869,7 @@ async def add_session_handler(client, message):
         new_user.add_handler(MessageHandler(ad_setup_cmd, filters.command("ad", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(stopad_cmd, filters.command("stopad", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(stop_cmd, filters.command("stop", prefixes=".") & filters.me))
+
         new_user.add_handler(MessageHandler(ad_listener, ad_filter & filters.me))
         new_user.add_handler(MessageHandler(auto_reply_listener, filters.incoming & ~filters.me))
 
@@ -893,14 +880,6 @@ async def add_session_handler(client, message):
 
     except Exception as e:
         await msg.edit(f"❌ **Connection Failed!**\nError: {e}")
-
-@bot.on_callback_query(filters.regex("check_join"))
-async def check_join_callback(client, callback_query):
-    if await force_check(client, callback_query.message):
-        await callback_query.message.delete()
-        await callback_query.answer("✅ Verified! Ab /start karo.", show_alert=True)
-    else:
-        await callback_query.answer("❌ Abhi tak join nahi kiya! Pehle channel join karo.", show_alert=True)
 
 print("✅ Magma Manager Bot Online!")
 
