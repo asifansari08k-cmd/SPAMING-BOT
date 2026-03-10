@@ -69,6 +69,46 @@ START_DATA = {
     "entities": None     
 }
 
+# ==================== DEFAULT START MESSAGE FORMATTING ====================
+# Yahan par tu apne hisaab se Emojis change kar lena jab tere paas aa jayein.
+E_MAGMA = "m A G m a"    # Top wala text/emojis
+E_BOT = "🤖"               # Magma Bot ke aage
+E_INFO = "💬"              # I can help you ke aage
+E_ONE = "1️⃣"               # HOW TO START
+E_MSG = "💬"               # Get Session
+E_LINK = "🔗"              # Go to link
+E_TWO = "2️⃣"               # Connect
+E_FIRE = "🔥"              # Send the session...
+E_THREE = "3️⃣"             # Enjoy
+E_BOLT = "⚡"              # After connecting...
+E_WARN = "⚠️"              # NOTE
+E_SHIELD = "🛡️"            # Keep session safe
+E_LOCK = "🔒"              # Never share
+
+DEFAULT_START_MESSAGE = f"""{E_MAGMA}
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+{E_BOT} <b>Magma Bot</b>
+<blockquote>WELCOME TO MAGMA USERBOT MANAGER</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+<blockquote>{E_INFO} I can help you run the powerful
+Magma Userbot on your Telegram account</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+{E_ONE} <b>HOW TO START</b>
+<blockquote>{E_MSG} Get Session
+{E_LINK} Go to: @Stingxsessionbot
+Generate a Pyrogram String Session.</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+{E_TWO} <b>Connect</b>
+<blockquote>{E_FIRE} Send the session here using command: <code>/add</code> sting session</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+{E_THREE} <b>Enjoy</b>
+<blockquote>{E_BOLT} After connecting, go to Saved Messages. Type: .help to see all commands</blockquote>
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+{E_WARN} <b>NOTE</b>
+<blockquote>{E_SHIELD} Keep your String Session safe
+{E_LOCK} Never share it with anyone</blockquote>"""
+# ========================================================================
+
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
@@ -798,10 +838,11 @@ async def save_start_with_media(client, message):
     except Exception as e:
         await message.reply_text(f"❌ Error aagaya bhai: {e}", reply_to_message_id=message.id)
 
-# --- NEW: /start HANDLER MERGED & FIXED (WITH QUOTE SUPPORT) ---
+# --- NEW: /start HANDLER MERGED & FIXED (WITH DEFAULT FALLBACK) ---
 @bot.on_message(filters.command("start"))
 async def start_cmd(client, message):
     try:
+        # Check if custom media/text is set via /addstart
         if START_DATA["type"] == "photo" and START_DATA["file_id"]:
             await message.reply_photo(
                 photo=START_DATA["file_id"], 
@@ -825,8 +866,14 @@ async def start_cmd(client, message):
                 reply_to_message_id=message.id
             )
             
+        # Agar kuch bhi set nahi hai, toh yeh DEFAULT stylish message jayega
         else:
-            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨", reply_to_message_id=message.id)
+            await message.reply_text(
+                DEFAULT_START_MESSAGE,
+                parse_mode=ParseMode.HTML,
+                reply_to_message_id=message.id,
+                disable_web_page_preview=True
+            )
             
     except Exception as e:
         await message.reply_text(f"Error aagaya bhai: {e}", reply_to_message_id=message.id)
