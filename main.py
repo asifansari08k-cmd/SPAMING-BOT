@@ -70,43 +70,28 @@ START_DATA = {
 }
 
 # ==================== DEFAULT START MESSAGE FORMATTING ====================
-# Yahan par tu apne hisaab se Emojis change kar lena jab tere paas aa jayein.
-E_MAGMA = "m A G m a"    # Top wala text/emojis
-E_BOT = "🤖"               # Magma Bot ke aage
-E_INFO = "💬"              # I can help you ke aage
-E_ONE = "1️⃣"               # HOW TO START
-E_MSG = "💬"               # Get Session
-E_LINK = "🔗"              # Go to link
-E_TWO = "2️⃣"               # Connect
-E_FIRE = "🔥"              # Send the session...
-E_THREE = "3️⃣"             # Enjoy
-E_BOLT = "⚡"              # After connecting...
-E_WARN = "⚠️"              # NOTE
-E_SHIELD = "🛡️"            # Keep session safe
-E_LOCK = "🔒"              # Never share
-
-DEFAULT_START_MESSAGE = f"""{E_MAGMA}
+DEFAULT_START_MESSAGE = """m A G m a
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-{E_BOT} <b>Magma Bot</b>
+🤖 <b>Magma Bot</b>
 <blockquote>WELCOME TO MAGMA USERBOT MANAGER</blockquote>
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-<blockquote>{E_INFO} I can help you run the powerful
+<blockquote>💬 I can help you run the powerful
 Magma Userbot on your Telegram account</blockquote>
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-{E_ONE} <b>HOW TO START</b>
-<blockquote>{E_MSG} Get Session
-{E_LINK} Go to: @Stingxsessionbot
+1️⃣ <b>HOW TO START</b>
+<blockquote>💬 Get Session
+🔗 Go to: @Stingxsessionbot
 Generate a Pyrogram String Session.</blockquote>
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-{E_TWO} <b>Connect</b>
-<blockquote>{E_FIRE} Send the session here using command: <code>/add</code> sting session</blockquote>
+2️⃣ <b>Connect</b>
+<blockquote>🔥 Send the session here using command: <code>/add</code> sting session</blockquote>
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-{E_THREE} <b>Enjoy</b>
-<blockquote>{E_BOLT} After connecting, go to Saved Messages. Type: .help to see all commands</blockquote>
+3️⃣ <b>Enjoy</b>
+<blockquote>⚡ After connecting, go to Saved Messages. Type: .help to see all commands</blockquote>
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-{E_WARN} <b>NOTE</b>
-<blockquote>{E_SHIELD} Keep your String Session safe
-{E_LOCK} Never share it with anyone</blockquote>"""
+⚠️ <b>NOTE</b>
+<blockquote>🛡️ Keep your String Session safe
+🔒 Never share it with anyone</blockquote>"""
 # ========================================================================
 
 # --- SHORT SPAM LIST ---
