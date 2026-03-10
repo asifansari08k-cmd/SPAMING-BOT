@@ -62,11 +62,11 @@ active_ads = {}
 ad_content = {}
 
 # --- START MESSAGE STORAGE (NEW FEATURE) ---
+# chat_id + message_id store karke copy_message use karenge
+# Isse blockquote/quote formatting 100% preserve hogi
 START_DATA = {
-    "type": "text",
-    "file_id": None,
-    "text": None,
-    "entities": None
+    "chat_id": None,
+    "message_id": None
 }
 
 # --- SHORT SPAM LIST ---
@@ -759,55 +759,31 @@ async def save_start_with_media(client, message):
         return
     
     reply = message.reply_to_message
-    
+
+    # Sirf message ka reference save karo — copy_message sab kuch preserve karega
+    START_DATA["chat_id"] = reply.chat.id
+    START_DATA["message_id"] = reply.id
+
     if reply.photo:
-        START_DATA["type"] = "photo"
-        START_DATA["file_id"] = reply.photo.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
-
+        await message.reply_text("🖼️ Photo + Quote formatting sab save ho gaya!")
     elif reply.video:
-        START_DATA["type"] = "video"
-        START_DATA["file_id"] = reply.video.file_id
-        START_DATA["text"] = reply.caption
-        START_DATA["entities"] = reply.caption_entities
-        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
-
+        await message.reply_text("🎥 Video + Quote formatting sab save ho gaya!")
     elif reply.text:
-        START_DATA["type"] = "text"
-        START_DATA["file_id"] = None
-        START_DATA["text"] = reply.text
-        START_DATA["entities"] = reply.entities
-        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
-        
+        await message.reply_text("📝 Text + Quote formatting sab save ho gaya!")
     else:
-        await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
+        await message.reply_text("✅ Message save ho gaya!")
 
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd_bot(client, message):
     try:
-        if START_DATA["type"] == "photo" and START_DATA["file_id"]:
-            await message.reply_photo(
-                photo=START_DATA["file_id"], 
-                caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
+        if START_DATA["chat_id"] and START_DATA["message_id"]:
+            # copy_message use karo — blockquote, premium emojis, sab preserve hoga
+            await client.copy_message(
+                chat_id=message.chat.id,
+                from_chat_id=START_DATA["chat_id"],
+                message_id=START_DATA["message_id"]
             )
-            
-        elif START_DATA["type"] == "video" and START_DATA["file_id"]:
-            await message.reply_video(
-                video=START_DATA["file_id"], 
-                caption=START_DATA["text"], 
-                caption_entities=START_DATA["entities"]
-            )
-            
-        elif START_DATA["type"] == "text" and START_DATA["text"]:
-            await message.reply_text(
-                text=START_DATA["text"], 
-                entities=START_DATA["entities"]
-            )
-            
         else:
             await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨")
             
