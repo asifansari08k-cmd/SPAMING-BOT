@@ -43,6 +43,13 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
+# ✅ FORCE SUBSCRIBE CONFIG
+FORCE_GROUP_ID = -1003387459132
+FORCE_GROUP_LINK = "https://t.me/+tPyKFO-Ls4Q2YmQx"
+
+FORCE_CHANNEL_ID = -1003603228454
+FORCE_CHANNEL_LINK = "https://t.me/Anysnapsupport"
+
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -71,7 +78,7 @@ START_DATA = {
 
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
-    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
+   "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗨𝗠𝗠𝗬 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗞𝗢 𝗢𝗡𝗟𝗜𝗡𝗘 𝗢𝗟𝗫 𝗣𝗘 𝗕𝗘𝗖𝗛𝗨𝗡𝗚𝗔 𝗔𝗨𝗥 𝗣𝗔𝗜𝗦𝗘 𝗦𝗘 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗔 𝗞𝗢𝗧𝗛𝗔 𝗞𝗛𝗢𝗟 𝗗𝗨𝗡𝗚𝗔 😎🤩😝😍",
     "{target} 𝗧𝗘𝗥𝗜 𝗚𝗙 𝗛𝗘 𝗕𝗔𝗗𝗜 𝗦𝗘𝗫𝗬 𝗨𝗦𝗞𝗢 𝗣𝗜𝗟𝗔𝗞𝗘 𝗖𝗛𝗢𝗢𝗗𝗘𝗡𝗚𝗘 𝗣𝗘𝗣𝗦𝗜",
     "{target} 𝗚𝗔𝗟𝗜 𝗚𝗔𝗟𝗜 𝗠𝗘 𝗥𝗘𝗛𝗧𝗔 𝗛𝗘 𝗦𝗔𝗡𝗗 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗 𝗗𝗔𝗟𝗔 𝗢𝗥 𝗕𝗔𝗡𝗔 𝗗𝗜𝗔 𝗥𝗔𝗡𝗗 🤤🤣",
@@ -193,6 +200,31 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
+
+async def check_force_subscribe(client, message):
+    user_id = message.from_user.id
+    try:
+        # User ko channel me check karo
+        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
+        # User ko group me check karo
+        await client.get_chat_member(FORCE_GROUP_ID, user_id)
+        return True
+    except UserNotParticipant:
+        buttons = [
+            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
+            [InlineKeyboardButton("👥 Join Group", url=FORCE_GROUP_LINK)],
+        ]
+        await message.reply(
+            "**⛔ ACCESS DENIED!**\n\n"
+            "Bhai aage badhne ke liye humare Channel aur Group dono ko join karna zaroori hai.\n"
+            "Dono join karo aur fir try karo!",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return False
+    except Exception as e:
+        print(f"Force Subscribe Error: {e}")
+        # Agar bot admin nahi hai ya koi aur error aayi to allow kar dete hain taaki bot break na ho
+        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -902,6 +934,10 @@ async def save_start_with_media(client, message):
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
 
+    # 🛑 Force Subscribe Check Before Continuing
+    if not await check_force_subscribe(client, message):
+        return
+
     global START_DATA
 
     buttons = InlineKeyboardMarkup(
@@ -963,6 +999,10 @@ async def start_cmd(client, message):
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
+
+    # 🛑 Force Subscribe Check Before Allowing Addition
+    if not await check_force_subscribe(client, message):
+        return
 
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
