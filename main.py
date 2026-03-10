@@ -61,6 +61,14 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
+# --- START MESSAGE STORAGE (FROM SECOND SCRIPT) ---
+START_DATA = {
+    "type": "text",      # Ye batayega ki photo hai, video hai ya text
+    "file_id": None,     # Media ka unique code
+    "text": None,        # Aapka message ya caption
+    "entities": None     # Aapke Premium Emojis
+}
+
 # --- SHORT SPAM LIST ---
 SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 𝗖𝗛𝗔𝗡𝗚𝗘𝗦 𝗖𝗢𝗠𝗠𝗜𝗧 𝗞𝗥𝗨𝗚𝗔 𝗙𝗜𝗥 𝗧𝗘𝗥𝗜 𝗕𝗛𝗘𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗔𝗨𝗧𝗢𝗠𝗔𝗧𝗜𝗖𝗔𝗟𝗟𝗬 𝗨𝗣𝗗𝗔𝗧𝗘 𝗛𝗢𝗝𝗔𝗔𝗬𝗘𝗚𝗜 🤖🙏🤔",
@@ -452,7 +460,7 @@ async def spam_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def anysnap_cmd(client, message):
+async def gourisenosint_cmd(client, message):
     global active_spams
     args = message.command
     
@@ -492,7 +500,7 @@ async def anysnap_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def aanysnap_cmd(client, message):
+async def agourisenosint_cmd(client, message):
     global auto_reply_users
     if not message.reply_to_message:
         res = await message.edit("❌ Reply to target!")
@@ -745,6 +753,77 @@ async def ad_filter_func(_, __, message):
     return bool(waiting_for_ad.get(message.from_user.id, False))
 ad_filter = filters.create(ad_filter_func)
 
+# --- NEW: /addstart HANDLER MERGED ---
+@bot.on_message(filters.command("addstart"))
+async def save_start_with_media(client, message):
+    global START_DATA
+    
+    if not message.reply_to_message:
+        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!")
+        return
+    
+    reply = message.reply_to_message
+    
+    # Agar Photo hai
+    if reply.photo:
+        START_DATA["type"] = "photo"
+        START_DATA["file_id"] = reply.photo.file_id
+        START_DATA["text"] = reply.caption
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🖼️ Photo aur Premium Emojis dono save ho gaye!")
+
+    # Agar Video hai
+    elif reply.video:
+        START_DATA["type"] = "video"
+        START_DATA["file_id"] = reply.video.file_id
+        START_DATA["text"] = reply.caption
+        START_DATA["entities"] = reply.caption_entities
+        await message.reply_text("🎥 Video aur Premium Emojis dono save ho gaye!")
+
+    # Agar sirf Text hai
+    elif reply.text:
+        START_DATA["type"] = "text"
+        START_DATA["file_id"] = None
+        START_DATA["text"] = reply.text
+        START_DATA["entities"] = reply.entities
+        await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
+        
+    else:
+        await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
+
+# --- NEW: /start HANDLER MERGED ---
+@bot.on_message(filters.command("start"))
+async def start_cmd(client, message):
+    
+    # Ab check karte hain bot ke dimaag mein kya save hai
+    try:
+        if START_DATA["type"] == "photo" and START_DATA["file_id"]:
+            await message.reply_photo(
+                photo=START_DATA["file_id"], 
+                caption=START_DATA["text"], 
+                caption_entities=START_DATA["entities"]
+            )
+            
+        elif START_DATA["type"] == "video" and START_DATA["file_id"]:
+            await message.reply_video(
+                video=START_DATA["file_id"], 
+                caption=START_DATA["text"], 
+                caption_entities=START_DATA["entities"]
+            )
+            
+        elif START_DATA["type"] == "text" and START_DATA["text"]:
+            await message.reply_text(
+                text=START_DATA["text"], 
+                entities=START_DATA["entities"]
+            )
+            
+        else:
+            await message.reply_text("Hᴇʏ! 1 2 3... Sᴛᴀʀᴛ ᴍᴇssᴀɢᴇ sᴇᴛ ᴋᴀʀᴏ ʙʜᴀɪ ✨")
+            
+    except Exception as e:
+        await message.reply_text(f"Error aagaya bhai: {e}")
+
+
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
     if len(message.command) < 2:
@@ -780,8 +859,8 @@ async def add_session_handler(client, message):
         new_user.add_handler(MessageHandler(clone_cmd, filters.command("clone", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(back_cmd, filters.command("back", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(spam_cmd, filters.command("spam", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("gourisenosint", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("agourisenosint", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(gourisenosint_cmd, filters.command("gourisenosint", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(agourisenosint_cmd, filters.command("agourisenosint", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(tagall_cmd, filters.command("tagall", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(allban_cmd, filters.command("allban", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(fastallban_cmd, filters.command("fastallban", prefixes=".") & filters.me))
