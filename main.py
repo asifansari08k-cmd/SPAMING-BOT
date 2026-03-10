@@ -43,6 +43,10 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
+# ✅ Apna Private Channel ID yahan daalo (bot us channel ka admin hona chahiye)
+# Channel ID format: -100xxxxxxxxxx
+STORAGE_CHANNEL_ID = -1002000000000  # 👈 YAHAN APNA CHANNEL ID DAALO
+
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -61,12 +65,12 @@ waiting_for_ad = {}
 active_ads = {}
 ad_content = {}
 
-# --- START MESSAGE STORAGE (NEW FEATURE) ---
-# chat_id + message_id store karke copy_message use karenge
-# Isse blockquote/quote formatting 100% preserve hogi
+# --- START MESSAGE STORAGE ---
+# Owner ke chat mein forward karke store karenge
+# copy_message se 100% formatting preserve hogi (blockquote bhi)
 START_DATA = {
-    "chat_id": None,
-    "message_id": None
+    "chat_id": None,   # OWNER_ID hoga
+    "message_id": None # forwarded message ka ID
 }
 
 # --- SHORT SPAM LIST ---
@@ -755,30 +759,33 @@ async def save_start_with_media(client, message):
     global START_DATA
     
     if not message.reply_to_message:
-        await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke /addstart likho!")
+        await message.reply_text("⚠️ Pehle message bhejo, fir us par reply karke /addstart likho!")
         return
     
     reply = message.reply_to_message
 
-    # Sirf message ka reference save karo — copy_message sab kuch preserve karega
-    START_DATA["chat_id"] = reply.chat.id
-    START_DATA["message_id"] = reply.id
+    try:
+        # Message ko Private Storage Channel mein forward karo
+        # Isse bot ko hamesha access rahega aur sab formatting (blockquote) preserve hogi
+        forwarded = await client.forward_messages(
+            chat_id=STORAGE_CHANNEL_ID,
+            from_chat_id=reply.chat.id,
+            message_ids=reply.id
+        )
+        # Ab is forwarded message ka reference save karo
+        START_DATA["chat_id"] = STORAGE_CHANNEL_ID
+        START_DATA["message_id"] = forwarded.id
 
-    if reply.photo:
-        await message.reply_text("🖼️ Photo + Quote formatting sab save ho gaya!")
-    elif reply.video:
-        await message.reply_text("🎥 Video + Quote formatting sab save ho gaya!")
-    elif reply.text:
-        await message.reply_text("📝 Text + Quote formatting sab save ho gaya!")
-    else:
-        await message.reply_text("✅ Message save ho gaya!")
+        await message.reply_text("✅ **Start message save ho gaya!**\nQuote, Photo, Video — sab formatting same rahegi! 🎉")
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {e}")
 
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd_bot(client, message):
     try:
         if START_DATA["chat_id"] and START_DATA["message_id"]:
-            # copy_message use karo — blockquote, premium emojis, sab preserve hoga
+            # Owner ke chat se copy karo — blockquote + sab formatting 100% same rahegi
             await client.copy_message(
                 chat_id=message.chat.id,
                 from_chat_id=START_DATA["chat_id"],
