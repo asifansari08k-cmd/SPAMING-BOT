@@ -12,7 +12,7 @@ import random
 import os
 from pyrogram import Client, filters, idle
 from pyrogram.enums import ParseMode, UserStatus, ChatMembersFilter, ChatMemberStatus, ChatType
-from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant
+from pyrogram.errors import FloodWait, MessageNotModified, UserNotParticipant, PeerIdInvalid
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -62,7 +62,6 @@ active_ads = {}
 ad_content = {}
 
 # --- START MESSAGE STORAGE (HARDCODED DEFAULTS) ---
-# Ye values ab default set hain, bot restart hone par yahi use hongi.
 START_CHAT_ID = -1003804939396
 START_MSG_ID = 3
 
@@ -780,6 +779,8 @@ async def start_cmd(client, message):
             from_chat_id=START_CHAT_ID,
             message_id=START_MSG_ID
         )
+    except PeerIdInvalid:
+         await message.reply("⚠️ **Technical Issue:** Pyrogram ko is private channel ka rasta nahi pata.\n\n🛠 **Fix karne ke liye:**\n1. Confirm karein ki ye Bot us private channel me **Admin** hai.\n2. Us private channel me se koi bhi ek message **is bot ko forward karein** (Ek baar ke liye).\n3. Fir uske baad wapas `/start` bhejein. Ye theek ho jayega!", quote=True)
     except Exception as e:
         await message.reply(f"❌ **Error aa gaya bhai:**\n`{e}`\n\n(Shayad bot us channel me admin nahi hai jaha se message copy karna hai)", quote=True)
 
