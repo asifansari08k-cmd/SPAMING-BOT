@@ -43,11 +43,6 @@ BOT_TOKEN = "8485202414:AAEEYv7_UjUR2DI4KN9l4bEKnsD9v0WGn7E"
 
 OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
-# ✅ FORCE SUBSCRIBE CONFIG
-FORCE_CHANNEL_ID = --1003387459132  
-FORCE_CHANNEL_LINK = "https://t.me/+tPyKFO-Ls4Q2YmQx" 
-FORCE_GROUP = "Anysnapsupport"
-
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
@@ -123,7 +118,7 @@ SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗜𝗧𝗘𝗠 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘 𝗟𝗨𝗡𝗗 𝗗𝗔𝗔𝗟𝗞𝗘, 𝗧𝗘𝗥𝗘 𝗝𝗔𝗜𝗦𝗔 𝗘𝗞 𝗢𝗥 𝗡𝗜𝗞𝗔𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗 😆🤤💋",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘 ✋ 𝗛𝗔𝗧𝗧𝗛 𝗗𝗔𝗟𝗞𝗘 👶 𝗕𝗔𝗖𝗖𝗛𝗘 𝗡𝗜𝗞𝗔𝗟 𝗗𝗨𝗡𝗚𝗔 😍",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗦𝗨𝗗𝗢 𝗟𝗔𝗚𝗔 𝗞𝗘 𝗕𝗜𝗚𝗦𝗣𝗔𝗠 𝗟𝗔𝗚𝗔 𝗞𝗘 𝟵𝟵𝟵𝟵 𝗙𝗨𝗖𝗞 𝗟𝗔𝗚𝗔𝗔 𝗗𝗨 🤩🥳🔥",
-    "{target} 𝗥𝗔𝗡𝗗𝗜𝗞𝗘 𝗕𝗔𝗖𝗛𝗛𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗𝗨 𝗖𝗛𝗔𝗟 𝗡𝗜𝗞𝗔𝗟",
+    "{target} 𝗥𝗔𝗡𝗗𝗜𝗞𝗘 𝗕𝗔𝗖𝗛𝗛𝗘 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗞𝗢 𝗖𝗛𝗢𝗗Ｕ 𝗖𝗛𝗔𝗟 𝗡𝗜𝗞𝗔𝗟",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔𝗔 𝗞𝗢 𝗛𝗢𝗥𝗟𝗜𝗖𝗞𝗦 𝗣𝗜𝗟𝗔𝗨𝗡𝗚𝗔 𝗠𝗔𝗗𝗔𝗥𝗖𝗛𝗢𝗗",
     "{target} 𝗦𝗨𝗡 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗔𝗨𝗥 𝗧𝗘𝗥𝗜 𝗕𝗔𝗛𝗘𝗡 𝗞𝗔 𝗕𝗛𝗜 𝗕𝗛𝗢𝗦𝗗𝗔 👿😎👊",
     "{target} 𝗧𝗘𝗥𝗜 𝗥Æ𝗡𝗗𝗜 𝗠𝗔́𝗔̀ 𝗦𝗘 𝗣𝗨𝗖𝗛𝗡𝗔 𝗕𝗔𝗔𝗣 𝗞𝗔 𝗡𝗔𝗔𝗠 𝗕𝗔𝗛𝗘𝗡 𝗞𝗘 𝗟𝗢𝗗𝗘𝗘𝗘𝗘𝗘 🤩🥳😳",
@@ -158,7 +153,7 @@ SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗘𝗥𝗔 𝗟𝗔𝗪𝗗𝗔 𝗝𝗔𝗬𝗘𝗚𝗔 𝗧𝗢 𝗖𝗛𝗜𝗟𝗟𝗔𝗬𝗘𝗚𝗜 😱",
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗚𝗔𝗔𝗡𝗗 𝗠𝗘𝗜 𝗗𝗔𝗡𝗗𝗔 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗠𝗢𝗥 𝗕𝗔𝗡𝗔 𝗗𝗨𝗡𝗚𝗔 🦚",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝟭𝟬 𝗟𝗢𝗚𝗢𝗡 𝗦𝗘 𝗘𝗞 𝗦𝗔𝗔𝗧𝗛 𝗖𝗛𝗨𝗗𝗪𝗔𝗨𝗡𝗚𝗔 🔟",
-    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗚𝗔𝗔𝗗𝗜 𝗠𝗘𝗜 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦𝗨𝗡𝗦𝗔𝗔𝗡 𝗝𝗔𝗚𝗔𝗛 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗣𝗘𝗟𝗨𝗡𝗚𝗔 🚗",
+    "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗚𝗔𝗔𝗗𝗜 𝗠𝗘𝗜 𝗗𝗔𝗔𝗟 𝗞𝗘 𝗦Ｕ𝗡𝗦𝗔𝗔𝗡 𝗝𝗔𝗚𝗔𝗛 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗣𝗘𝗟𝗨𝗡𝗚𝗔 🚗",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗜𝗧𝗡𝗔 𝗖𝗛𝗢𝗗𝗔 𝗛𝗔𝗜 𝗞𝗜 𝗚𝗨𝗙𝗔 𝗟𝗔𝗚𝗧𝗔 𝗛𝗔𝗜 🕳️",
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗘 𝗦𝗧𝗔𝗡 𝗞𝗔𝗔𝗧 𝗞𝗘 𝗞𝗨𝗧𝗧𝗢𝗡 𝗞𝗢 𝗞𝗛𝗜𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🐕",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗢 𝗡𝗔𝗡𝗚𝗔 𝗞𝗔𝗥𝗞𝗞𝗘 𝗣𝗢𝗢𝗥𝗘 𝗕𝗔𝗭𝗔𝗔𝗥 𝗠𝗘𝗜 𝗚𝗛𝗨𝗠𝗔𝗨𝗡𝗚𝗔 🛍️",
@@ -183,7 +178,7 @@ SPAM_MESSAGES = [
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗦𝗛𝗔𝗥𝗔𝗔𝗕 𝗣𝗜𝗟𝗔 𝗞𝗘 𝗕𝗘𝗛𝗢𝗦𝗦 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🍷",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗚𝗢𝗟𝗜 𝗠𝗔𝗔𝗥 𝗗𝗨𝗡𝗚𝗔 🔫",
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗡𝗔𝗡𝗚𝗔 𝗞𝗔𝗥𝗞𝗞𝗞𝗘 𝗩𝗜𝗗𝗘𝗢 𝗕𝗔𝗡𝗔𝗨𝗡𝗚𝗔 📹",
-    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗖𝗛𝗘𝗘𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕𝗟𝗔𝗗𝗘 𝗦𝗘 🔪",
+    "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗔 𝗕𝗛𝗢𝗦𝗗𝗔 𝗖𝗛𝗘𝗘𝗥 𝗗𝗨𝗡𝗚𝗔 𝗕Ｌ𝗔𝗗𝗘 𝗦𝗘 🔪",
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗢 𝗞𝗛𝗘𝗧 𝗠𝗘𝗜 𝗟𝗘 𝗝𝗔𝗞𝗘 𝗚𝗛𝗔𝗔𝗦 𝗣𝗘 𝗖𝗛𝗢𝗗𝗨𝗡𝗚𝗔 🌾",
     "{target} 𝗧𝗘𝗥𝗜 𝗠𝗔𝗔 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗨𝗞𝗞𝗞𝗞𝗔 𝗠𝗔𝗔𝗥 𝗞𝗘 𝗕𝗔𝗖𝗛𝗛𝗘 𝗗𝗔𝗔𝗡𝗜 𝗕𝗔𝗛𝗔𝗥 𝗡𝗜𝗞𝗔𝗔𝗟 𝗟𝗨𝗡𝗚𝗔 👊",
     "{target} 𝗧𝗘𝗥𝗜 𝗕𝗘𝗛𝗘𝗡 𝗞𝗜 𝗖𝗛𝗨𝗧 𝗠𝗘𝗜 𝗠𝗢𝗠𝗕𝗔𝗧𝗧𝗜 𝗝𝗔𝗟𝗔 𝗗𝗨𝗡𝗚𝗔 🕯️",
@@ -198,28 +193,6 @@ SPAM_MESSAGES = [
 ]
 
 # ==================== HELPER FUNCTIONS ====================
-
-async def check_force_subscribe(client, message):
-    user_id = message.from_user.id
-    try:
-        await client.get_chat_member(FORCE_CHANNEL_ID, user_id)
-        await client.get_chat_member(FORCE_GROUP, user_id)
-        return True
-    except UserNotParticipant:
-        buttons = [
-            [InlineKeyboardButton("📢 Join Channel", url=FORCE_CHANNEL_LINK)],
-            [InlineKeyboardButton("👥 Join Group", url=f"https://t.me/{FORCE_GROUP}")],
-        ]
-        await message.reply(
-            "**⛔ ACCESS DENIED!**\n\n"
-            "You must join our Channel and Group to use this bot.\n"
-            "Join then try again!",
-            reply_markup=InlineKeyboardMarkup(buttons)
-        )
-        return False
-    except Exception as e:
-        print(f"FS Error: {e}")
-        return True 
 
 async def smart_edit(message, text, sleep_time=0.5):
     try:
@@ -409,8 +382,8 @@ async def help_handler(client, message):
 ❤️ `.love` - Magic Heart Animation
 ℹ️ `.info <reply>` - Get User Info
 🚀 `.spam <msg> <count>` - Custom Spam
-🚀 `.anysnap <username/id> <count>` - Abuse Spam
-🎯 `.aanysnap` - Global Auto-Reply
+🚀 `.gourisen <username/id> <count>` - Abuse Spam
+🎯 `.agourisen` - Global Auto-Reply
 👥 `.clone` - Copy ID
 🔄 `.back` - Restore ID
 📍 `.tagall <msg>` - Tag Everyone
@@ -565,7 +538,7 @@ async def back_cmd(client, message):
 async def spam_cmd(client, message):
     global active_spams
     args = message.command
-    
+
     if len(args) < 3:
         res = await message.edit("❌ **Usage:** `.spam <message> <count>`\nExample: `.spam Hello 50`")
         return asyncio.create_task(delete_res(res))
@@ -577,7 +550,7 @@ async def spam_cmd(client, message):
         except ValueError:
             count = int(args[1])
             spam_text = " ".join(args[2:])
-            
+
         if not spam_text:
             res = await message.edit("❌ Spam message daalna bhool gaye!")
             return asyncio.create_task(delete_res(res))
@@ -601,12 +574,12 @@ async def spam_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def anysnap_cmd(client, message):
+async def gourisen_cmd(client, message):
     global active_spams
     args = message.command
-    
+
     if len(args) < 2:
-        res = await message.edit("❌ Usage:\n`.anysnap <count>` (Reply)\n`.anysnap <username/id> <count>`")
+        res = await message.edit("❌ Usage:\n`.gourisen <count>` (Reply)\n`.gourisen <username/id> <count>`")
         return asyncio.create_task(delete_res(res))
 
     try:
@@ -615,7 +588,7 @@ async def anysnap_cmd(client, message):
             target = message.reply_to_message.from_user
         else:
             if len(args) < 3:
-                res = await message.edit("❌ Usage: `.anysnap <username/id> <count>`")
+                res = await message.edit("❌ Usage: `.gourisen <username/id> <count>`")
                 return asyncio.create_task(delete_res(res))
             target_input = args[1]
             count = int(args[2])
@@ -633,7 +606,7 @@ async def anysnap_cmd(client, message):
         res = await message.edit(f"🚀 **Fast Spamming {count} on {mention}...**")
         asyncio.create_task(run_spam(client, message.chat.id, mention, count))
         asyncio.create_task(delete_res(res))
-        
+
     except ValueError:
         res = await message.edit("❌ Count must be a number!")
         asyncio.create_task(delete_res(res))
@@ -641,7 +614,7 @@ async def anysnap_cmd(client, message):
         res = await message.edit(f"❌ Error: {e}")
         asyncio.create_task(delete_res(res))
 
-async def aanysnap_cmd(client, message):
+async def agourisen_cmd(client, message):
     global auto_reply_users
     if not message.reply_to_message:
         res = await message.edit("❌ Reply to target!")
@@ -672,7 +645,7 @@ async def allban_cmd(client, message):
     if len(message.command) < 2:
         res = await message.edit("❌ Usage: `.allban <chat_id or username>`")
         return asyncio.create_task(delete_res(res))
-    
+
     chat_id = message.command[1]
     try:
         if chat_id.lstrip('-').isdigit():
@@ -698,7 +671,7 @@ async def allban_cmd(client, message):
                 await client.ban_chat_member(chat_id, member.user.id)
                 banned_count += 1
             except Exception: continue
-                
+
         if active_bans.get(message.chat.id, True):
             await status_msg.edit(f"✅ **Mass ban complete!** Successfully banned {banned_count} members.")
     except Exception as e:
@@ -710,7 +683,7 @@ async def fastallban_cmd(client, message):
     if len(message.command) < 2:
         res = await message.edit("❌ Usage: `.fastallban <chat_id or username>`")
         return asyncio.create_task(delete_res(res))
-    
+
     chat_id = message.command[1]
     try:
         if chat_id.lstrip('-').isdigit():
@@ -736,7 +709,7 @@ async def fastallban_cmd(client, message):
                 await client.ban_chat_member(chat_id, member.user.id)
                 banned_count += 1
             except Exception: continue
-                
+
         if active_bans.get(message.chat.id, True):
             await status_msg.edit(f"✅ **Fast Mass ban complete!** Successfully banned {banned_count} members.")
     except Exception as e:
@@ -748,7 +721,7 @@ async def end_cmd(client, message):
     if len(message.command) < 2:
         res = await message.edit("❌ Usage: `.end <chat_id or username>`")
         return asyncio.create_task(delete_res(res))
-    
+
     chat_id = message.command[1]
     try:
         if chat_id.lstrip('-').isdigit():
@@ -759,7 +732,7 @@ async def end_cmd(client, message):
     status_msg = await message.edit(f"☠️ **NUKE GC started in {chat_id}...**\n(⚡ EXTREME SPEED MODE ⚡)")
     me = await client.get_me()
     banned_count = 0
-    
+
     try:
         async for member in client.get_chat_members(chat_id):
             if not active_bans.get(message.chat.id, True):
@@ -819,7 +792,7 @@ async def run_ad_loop(client, user_id):
             async for dialog in client.get_dialogs():
                 if not active_ads.get(user_id, False):
                     break
-                
+
                 chat = dialog.chat
                 if chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
                     try:
@@ -829,7 +802,7 @@ async def run_ad_loop(client, user_id):
                         await asyncio.sleep(e.value)
                     except Exception:
                         continue
-            
+
             if active_ads.get(user_id, False):
                 await asyncio.sleep(300) 
         except Exception:
@@ -849,7 +822,7 @@ async def ad_listener(client, message):
         waiting_for_ad[user_id] = False
         ad_content[user_id] = message.text.html if message.text else "Ad Message"
         active_ads[user_id] = True
-        
+
         await message.reply(f"✅ **Ad Successfully Set!**\nAb har 5 minute me ye message aapke saare joined groups me jayega.\n\nIse band karne ke liye `.stopad` use karein.")
         asyncio.create_task(run_ad_loop(client, user_id))
 
@@ -894,13 +867,13 @@ ad_filter = filters.create(ad_filter_func)
 @bot.on_message(filters.command("addstart") & filters.user(OWNER_ID) & filters.private)
 async def save_start_with_media(client, message):
     global START_DATA
-    
+
     if not message.reply_to_message:
         await message.reply_text("⚠️ Bhai, pehle message (photo/video/text) bhejo, fir us par reply karke `/addstart` likho!")
         return
-    
+
     reply = message.reply_to_message
-    
+
     if reply.photo:
         START_DATA["type"] = "photo"
         START_DATA["file_id"] = reply.photo.file_id
@@ -921,22 +894,19 @@ async def save_start_with_media(client, message):
         START_DATA["text"] = reply.text
         START_DATA["entities"] = reply.entities
         await message.reply_text("📝 Text aur Premium Emojis save ho gaye!")
-        
+
     else:
         await message.reply_text("⚠️ Ye format support nahi kar raha, bhai. Photo, Video ya Text bhejo.")
 
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
-    if not await check_force_subscribe(client, message):
-        return
 
     global START_DATA
-    
+
     buttons = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("🎵 Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ", url=f"https://t.me/{client.me.username}?startgroup=true")],
-            [InlineKeyboardButton("👨‍💻 Gourisen OSINT", url=f"tg://user?id={OWNER_ID}")]
+            [InlineKeyboardButton("Developer", url="https://t.me/MAGMAxRICH")]
         ]
     )
 
@@ -948,7 +918,7 @@ async def start_cmd(client, message):
                 caption_entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
-            
+
         elif START_DATA["type"] == "video" and START_DATA["file_id"]:
             await message.reply_video(
                 video=START_DATA["file_id"], 
@@ -956,14 +926,14 @@ async def start_cmd(client, message):
                 caption_entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
-            
+
         elif START_DATA["type"] == "text" and START_DATA["text"]:
             await message.reply_text(
                 text=START_DATA["text"], 
                 entities=START_DATA["entities"], 
                 reply_markup=buttons
             )
-            
+
         else:
             text = """
 🔥 **WELCOME TO MAGMA USERBOT MANAGER** 🔥
@@ -985,7 +955,7 @@ async def start_cmd(client, message):
 ⚠️ **Note:** Keep your session safe!
 """
             await message.reply(text, parse_mode=ParseMode.HTML, reply_markup=buttons)
-            
+
     except Exception as e:
         print(f"Start Error: {e}")
         await message.reply_text(f"Error aagaya bhai: {e}")
@@ -993,8 +963,6 @@ async def start_cmd(client, message):
 
 @bot.on_message(filters.command("add") & filters.private)
 async def add_session_handler(client, message):
-    if not await check_force_subscribe(client, message):
-        return
 
     if len(message.command) < 2:
         await message.reply("❌ Usage: `/add <StringSession>`")
@@ -1029,8 +997,8 @@ async def add_session_handler(client, message):
         new_user.add_handler(MessageHandler(clone_cmd, filters.command("clone", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(back_cmd, filters.command("back", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(spam_cmd, filters.command("spam", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(anysnap_cmd, filters.command("anysnap", prefixes=".") & filters.me))
-        new_user.add_handler(MessageHandler(aanysnap_cmd, filters.command("aanysnap", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(gourisen_cmd, filters.command("gourisen", prefixes=".") & filters.me))
+        new_user.add_handler(MessageHandler(agourisen_cmd, filters.command("agourisen", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(tagall_cmd, filters.command("tagall", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(allban_cmd, filters.command("allban", prefixes=".") & filters.me))
         new_user.add_handler(MessageHandler(fastallban_cmd, filters.command("fastallban", prefixes=".") & filters.me))
