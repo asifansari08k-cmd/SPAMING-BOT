@@ -45,7 +45,11 @@ OWNER_ID = 7727470646 # ✅ Aapki Owner ID
 
 # ✅ Apna Private Channel ID yahan daalo (bot us channel ka admin hona chahiye)
 # Channel ID format: -100xxxxxxxxxx
-STORAGE_CHANNEL_ID = -1003804939396  # 👈 YAHAN APNA CHANNEL ID DAALO
+STORAGE_CHANNEL_ID = -1003804939396  # 👈 YAHAN APNA STORAGE CHANNEL ID DAALO
+
+# ✅ Force Subscribe Channel ID yahan daalo (bot admin hona chahiye with invite link permission)
+FORCE_CHANNEL_ID = -1002000000001    # 👈 YAHAN APNA FORCE CHANNEL ID DAALO
+FORCE_CHANNEL_LINK = "https://t.me/yourchannel"  # 👈 YAHAN APNA CHANNEL LINK DAALO
 
 # Main Manager Bot
 bot = Client("MagmaManager", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -253,6 +257,39 @@ MYSON_ART = r"""
       /ﾐ`ー―彡\  (•ㅅ•)
      / ╰    ╯ \ /    \>
 """
+
+# ==================== FORCE SUBSCRIBE ====================
+
+async def force_check(client, message):
+    """Check karo user ne channel join kiya ya nahi"""
+    try:
+        member = await client.get_chat_member(FORCE_CHANNEL_ID, message.from_user.id)
+        # Agar banned ya left hai toh False return karo
+        if member.status.name in ["BANNED", "LEFT"]:
+            return False
+        return True
+    except UserNotParticipant:
+        return False
+    except Exception:
+        # Agar check fail hua toh allow karo (taaki bot band na ho)
+        return True
+
+async def send_force_msg(message):
+    """Force join message bhejo"""
+    from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+    await message.reply_text(
+        "🚫 **Access Denied!**
+
+"
+        "Bot use karne ke liye pehle humara channel join karo! 👇
+
+"
+        "Channel join karne ke baad dobara /start karo. ✅",
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("✅ Join Channel", url=FORCE_CHANNEL_LINK)],
+            [InlineKeyboardButton("🔄 Try Again", callback_data="check_join")]
+        ])
+    )
 
 # ==================== USERBOT HANDLERS ====================
 
@@ -783,6 +820,10 @@ async def save_start_with_media(client, message):
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd_bot(client, message):
+    # Force Subscribe Check
+    if not await force_check(client, message):
+        await send_force_msg(message)
+        return
     try:
         if START_DATA["chat_id"] and START_DATA["message_id"]:
             # Owner ke chat se copy karo — blockquote + sab formatting 100% same rahegi
@@ -852,6 +893,14 @@ async def add_session_handler(client, message):
 
     except Exception as e:
         await msg.edit(f"❌ **Connection Failed!**\nError: {e}")
+
+@bot.on_callback_query(filters.regex("check_join"))
+async def check_join_callback(client, callback_query):
+    if await force_check(client, callback_query.message):
+        await callback_query.message.delete()
+        await callback_query.answer("✅ Verified! Ab /start karo.", show_alert=True)
+    else:
+        await callback_query.answer("❌ Abhi tak join nahi kiya! Pehle channel join karo.", show_alert=True)
 
 print("✅ Magma Manager Bot Online!")
 
