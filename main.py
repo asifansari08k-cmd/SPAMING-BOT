@@ -599,7 +599,7 @@ ad_filter = filters.create(ad_filter_func)
 
 
 # ==================== MAIN BOT START HANDLER ====================
-# EXACT SAME TO SAME COPY (NO FORWARD TAG)
+# YAHAN PE EXACT QUOTE (REPLY) KAREGA JAISE PURANA KARTA THA
 
 @bot.on_message(filters.command("setstart") & filters.user(OWNER_ID))
 async def set_start_cmd(client, message):
@@ -619,17 +619,31 @@ async def set_start_cmd(client, message):
 
 @bot.on_message(filters.command("start") & filters.private)
 async def start_cmd(client, message):
+    if not START_CHAT_ID or not START_MSG_ID:
+        await message.reply("Hᴇʏ! Start message abhi set nahi hai.\nOwner ko bolo `/setstart <link>` use karke pehle message set kare ✨", quote=True)
+        return
+    
     try:
-        # SAME TO SAME MESSAGE COPY KAREGA
-        await client.copy_message(
-            chat_id=message.chat.id,
-            from_chat_id=START_CHAT_ID,
-            message_id=START_MSG_ID
-        )
+        # Channel se message get karna 
+        m = await client.get_messages(START_CHAT_ID, START_MSG_ID)
+        
+        if not m:
+            return await message.reply("❌ Message nahi mila channel me.", quote=True)
+            
+        # Exact quote karke user ko send karna (Photo/Video/Text)
+        if m.photo:
+            await message.reply_photo(photo=m.photo.file_id, caption=m.caption or "", caption_entities=m.caption_entities, quote=True)
+        elif m.video:
+            await message.reply_video(video=m.video.file_id, caption=m.caption or "", caption_entities=m.caption_entities, quote=True)
+        elif m.text:
+            await message.reply_text(text=m.text, entities=m.entities, quote=True)
+        else:
+            await client.copy_message(chat_id=message.chat.id, from_chat_id=START_CHAT_ID, message_id=START_MSG_ID, reply_to_message_id=message.id)
+            
     except PeerIdInvalid:
-        await message.reply("⚠️ **Pyrogram ko channel ka rasta nahi mil raha.**\n\n🛠 **Solve kaise karein:**\nBot ko channel me admin bana rakha hai toh, apne channel me jao aur bas `Hi` likh kar bhej do. Bot update pakad lega aur error hat jayega!", quote=True)
+        await message.reply("⚠️ **Pyrogram ko channel ka rasta nahi mil raha.**\n\n🛠 **Solve kaise karein:**\nBot ko channel me admin bana rakha hai toh, apne channel me jao aur bas `Hi` likh kar bhej do bot ko. Bot update pakad lega aur error hat jayega!", quote=True)
     except Exception as e:
-        await message.reply(f"❌ **Error:** `{e}`\n\n(Ensure bot is admin in the channel!)", quote=True)
+        await message.reply(f"❌ **Error:** `{e}`", quote=True)
 
 
 # ==================== SESSION ADDER ====================
